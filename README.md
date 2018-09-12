@@ -2,6 +2,7 @@
 
 ## Baseliner
 ![Baseliner](./doc/Baseliner.png)
+
 Baseliner returns one of two possible signals ("Signal" or "Base"), based on a gate input. In its basic state, it will 
 return Base if the gate is inactive and Signal otherwise. This will let you e.g. mute and unmute modulation signals based on external events like a sequencer input. Signal and Base are obtained via abs + inp * att. 
 
