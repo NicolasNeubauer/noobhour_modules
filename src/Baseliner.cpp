@@ -181,7 +181,7 @@ void Baseliner::step() {
 
 struct BaselinerWidget : ModuleWidget {
   BaselinerWidget(Baseliner *module) : ModuleWidget(module) {
-	setPanel(SVG::load(assetPlugin(plugin, "res/Baseliner2.svg")));
+	setPanel(SVG::load(assetPlugin(plugin, "res/Baseliner.svg")));
 
 	addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
 	addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
