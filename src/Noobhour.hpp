@@ -7,6 +7,4 @@ using namespace rack;
 extern Plugin *plugin;
 
 // Forward-declare each Model, defined in each module source file
-// extern Model *modelMyModule;
-extern Model *modelBernoulliSwitch;
 extern Model *modelBaseliner;
