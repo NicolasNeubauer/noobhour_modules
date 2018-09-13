@@ -171,13 +171,9 @@ void Baseliner::step() {
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 1.0;	  
 	}
-	float output = clamp(input * param + absVal, -5.f, 5.f); 
-
-	lights[SIGNAL1_LIGHT_NEG + 2*i].value *= 1.0 - engineGetSampleTime() * 15.0;		
-	lights[BASE1_LIGHT_NEG + 2*i].value *= 1.0 - engineGetSampleTime() * 15.0;
-
-	outputs[OUT1_OUTPUT + i].value = output;
+	float output = clamp(input * param + absVal, -5.f, 5.f);
 	
+	outputs[OUT1_OUTPUT + i].value = output;	
   }
 
 }
@@ -191,7 +187,6 @@ struct BaselinerWidget : ModuleWidget {
 	addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
 	addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 0)));
 	addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 365)));	
-
 
 	float wKnob = 30.23437f;
 	float wSwitch = 17.94267f;
@@ -216,7 +211,7 @@ struct BaselinerWidget : ModuleWidget {
 
 	for (int i=0; i<Baseliner::NUM_COLUMNS; i++) {
 	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));	  	  
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner::SIGNAL1_PARAM + i, 0.f, 1.f, 1.f));	  
+	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f));	  
 	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), Port::INPUT, module, Baseliner::SIGNAL1_INPUT + i));
 
 	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 2.78f), module, Baseliner::SIGNAL1_LIGHT_POS + 2*i));	  
@@ -224,7 +219,7 @@ struct BaselinerWidget : ModuleWidget {
 	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner::BASE1_LIGHT_POS + 2*i));
 
 	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), Port::INPUT, module, Baseliner::BASE1_INPUT + i));		
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner::BASE1_PARAM + i, 0.f, 1.f, 1.f));
+	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner::BASE1_PARAM + i, -1.f, 1.f, 1.f));
 	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f));
 	  
 	  addOutput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), Port::OUTPUT, module, Baseliner::OUT1_OUTPUT + i));
