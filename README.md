@@ -2,6 +2,7 @@
 
 ## Baseliner
 A probabilistic attenuator switch.
+
 ![Baseliner](./doc/Baseliner.png)
 
 Baseliner returns one of two possible signals ("Signal" or "Base"),
