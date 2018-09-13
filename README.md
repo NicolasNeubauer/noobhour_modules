@@ -1,24 +1,42 @@
 # noobhour modules
 
 ## Baseliner
+A probabilistic attenuator switch.
 ![Baseliner](./doc/Baseliner.png)
 
-Baseliner returns one of two possible signals ("Signal" or "Base"), based on a gate input. In its basic state, it will 
-return Base if the gate is inactive and Signal otherwise. This will let you e.g. mute and unmute modulation signals based on external events like a sequencer input. Signal and Base are obtained via abs + inp * att. 
+Baseliner returns one of two possible signals ("Signal" or "Base"),
+based on a gate input. In its basic state, it will return Base if the
+gate is inactive and Signal otherwise. Since Base defaults to 0, this
+is simply an AND gate. 
 
-### Modes and Probabilities
-Besides the regular Gate mode, there are two modes, Latch and Toggle, which behave like the modes in Audible Instruments' Bernoulli Gate (Mutable Instruments Branches).
+However, when selecting and shaping a modulator signal for further
+use, there are recurring tasks that are beyond the simple AND gate,
+covered by Baseliner:
+- Base can be tied to an input just like Signal in case the value for
+  gate off shouldn't be 0.
+- Both signals can be offset and attenuated to shape a CV for further
+  processing - the final output is input * att + abs.
+- In Toggle mode, it acts like a 2:1 switch.
+- Changing probability p via parameter or input adds random elements
+  to the processing of the gate.
 
-In Gate mode, Signal is returned if Gate is on - but only with probability p, determined each time Gate triggers (switches from off to on).
+### Modes and Probabilities 
 
-In Latch mode, Gate is only used as a trigger: When it triggers, the output switches to Signal with probability p or to Base otherwise.
+Besides the regular Gate mode, there are two modes, Latch and Toggle,
+which behave like the modes in Audible Instruments' Bernoulli Gate
+(Mutable Instruments Branches).
 
-In Toggle mode., Gate is only used as a trigger as well: When it triggers, the output switches from Base to Signal or from Signal to Base with probability p. 
+In Gate mode, Signal is returned if Gate is on - but only with
+probability p, determined each time Gate triggers (switches from off
+to on).
 
-### Patching tips
-- Plug in a modulation CV into Signal and a gate input into Gate in order to only pass on Signal if the gate triggers.
-- Use the attenuator to shape an incoming modulation signal to your musical needs. If that is all you need, only use the Base input for basic A+B*C functionality. 
-- Plug inputs into both Signal and Base and use Latch or Toggle mode to probabilistically switch between the two.
+In Latch mode, Gate is only used as a trigger: When it triggers, the
+output switches to Signal with probability p or to Base otherwise.
+
+In Toggle mode, Gate is only used as a trigger as well: When it
+triggers, the output switches from Base to Signal or from Signal to
+Base with probability p.
+
 
 
 
