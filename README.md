@@ -21,7 +21,7 @@ and to deciding which signal to return.
 The original motivation for this module was to pass on a signal if
 gate is on, but have it fall back to a definable baseline, not just 0,
 when it's off, hence its name. The ways the two signals can be shaped
-are the same for bott; the only difference is when they are returned.
+are the same for both; the only difference is when they are returned.
 
 Both High and Low are computed as their respective input * att + abs.
 If no input is given, this lets you dial in a constant value via abs
@@ -41,14 +41,14 @@ which behave like the modes in
 Bernoulli Gate (a software implementation of
 [Mutable Instruments Branches](https://mutable-instruments.net/modules/branches/)).
 There is also a probability input which is computed as the sum of the
-knob value (0-1) and the CV input.
+knob value (0..1) and the CV input.
 
 - In Gate mode, High is returned if Gate is on - but only with
   probability p, determined each time Gate triggers (switches from off
   to on).
 
 - In Latch mode, Gate is only used as a trigger: When it triggers, the
-  output switches to High with probability p or to Base otherwise.
+  output switches to High with probability p or to Low otherwise.
 
 - In Toggle mode, Gate is only used as a trigger as well: When it
   triggers, the output switches from Low to High or from High to
