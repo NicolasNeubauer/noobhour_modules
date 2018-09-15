@@ -20,14 +20,15 @@ and to deciding which signal to return.
 
 The original motivation for this module was to pass on a signal if
 gate is on, but have it fall back to a definable baseline, not just 0,
-when it's off, hence its name. The ways the two signals can be shaped
-are the same for both; the only difference is when they are returned.
+when it's off, hence its name. 
 
-Both High and Low are computed as their respective input * att + abs.
-If no input is given, this lets you dial in a constant value via abs
-(-5V..5V).  Once you provide an input, you can offset it using abs and
-attenuate it via att, which is an "attenuverter" i.e. also lets you
-invert the signal as its value can be set from -1V to 1V.
+The ways the two signals can be shaped are the same for both; the only
+difference is when they are returned. Both High and Low are computed
+as their respective input * att + abs. If no input is given, this
+lets you dial in a constant value via abs (-5V..5V).  Once you provide
+an input, you can offset it using abs and attenuate it via att, which
+is an "attenuverter" i.e. also lets you invert the signal as its value
+can be set from -1V to 1V.
 
 
 ### High or Low? - Modes and Probabilities 

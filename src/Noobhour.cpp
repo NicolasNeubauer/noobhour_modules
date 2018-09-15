@@ -9,5 +9,6 @@ void init(Plugin *p) {
 	p->slug = TOSTRING(SLUG);
 	p->version = TOSTRING(VERSION);
 
-	p->addModel(modelBaseliner);	
+	p->addModel(modelBaseliner);
+	p->addModel(modelCustomScale);		
 }
