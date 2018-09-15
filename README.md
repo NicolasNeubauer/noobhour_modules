@@ -1,5 +1,5 @@
 # noobhour modules
-A collection of one module for [VCV Rack])(https://github.com/VCVRack/Rack)
+A collection of one module for [VCV Rack](https://github.com/VCVRack/Rack)
 
 ## Baseliner
 A 4x probabilistic attenuverting switch. 
