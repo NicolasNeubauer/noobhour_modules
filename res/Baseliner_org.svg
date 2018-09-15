@@ -19,7 +19,7 @@
    enable-background="new 0 0 90 380"
    xml:space="preserve"
    id="svg276"
-   sodipodi:docname="Baseliner2_org.svg"
+   sodipodi:docname="Baseliner_org.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"><metadata
    id="metadata282"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
@@ -75,15 +75,15 @@
    inkscape:window-height="1017"
    id="namedview278"
    showgrid="true"
-   inkscape:zoom="4.9684213"
-   inkscape:cx="-68.876364"
-   inkscape:cy="198.14488"
+   inkscape:zoom="1.7566022"
+   inkscape:cx="-8.3374993"
+   inkscape:cy="155.43847"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
    inkscape:current-layer="layer7"
-   inkscape:measure-start="48.1493,207.973"
-   inkscape:measure-end="47.953,51.672"
+   inkscape:measure-start="27.3255,163.668"
+   inkscape:measure-end="27.3255,27.6101"
    showguides="true"
    inkscape:snap-grids="false"><inkscape:grid
      type="xygrid"
@@ -94,19 +94,19 @@
    inkscape:label="Base"
    style=""><g
      id="g3859"
-     style=""><rect
+     style="fill:#e6e6e6;fill-opacity:1"><rect
        id="background"
        width="90"
        height="380"
        x="0"
        y="0"
-       style="fill:#e6e6e6" /><rect
+       style="fill:#e6e6e6;fill-opacity:1" /><rect
        id="background-4"
        width="90"
        height="380"
        x="90"
        y="0"
-       style="fill:#e6e6e6" /></g></g><g
+       style="fill:#e6e6e6;fill-opacity:1" /></g></g><g
    inkscape:groupmode="layer"
    id="layer5"
    inkscape:label="Color"
@@ -220,16 +220,16 @@
    inkscape:label="Text"><text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="6.1375895"
+   x="10.73875"
    y="283.29379"
    id="text4012-8"><tspan
      sodipodi:role="line"
      id="tspan4010-1"
-     x="6.1375895"
+     x="10.73875"
      y="283.29379"
      style="font-size:8px">gate</tspan><tspan
      sodipodi:role="line"
-     x="6.1375895"
+     x="10.73875"
      y="299.96045"
      style="font-size:8px"
      id="tspan4032" /></text>
@@ -239,21 +239,24 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="5.4759865"
+   x="9.3520317"
    y="293.68137"
    id="text4012-8-1"
    inkscape:transform-center-x="-5.6355931"
    inkscape:transform-center-y="-15.699152"><tspan
      sodipodi:role="line"
      id="tspan4010-1-2"
-     x="5.4759865"
+     x="9.3520317"
      y="293.68137"
      style="font-size:8px">latch</tspan><tspan
      sodipodi:role="line"
-     x="5.4759865"
+     x="9.3520317"
      y="310.34802"
      style="font-size:10.66666698px"
      id="tspan4032-3" /></text>
@@ -263,14 +266,17 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="5.8785362"
+   x="3.5043755"
    y="303.74493"
    id="text4012-8-7"><tspan
      sodipodi:role="line"
-     x="5.8785362"
+     x="3.5043755"
      y="303.74493"
      style="font-size:8px"
      id="tspan4032-7">toggle</tspan></text>
@@ -280,17 +286,23 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="5.2330403"
+   x="23.504375"
    y="336.52542"
    id="text4012"><tspan
      sodipodi:role="line"
      id="tspan4010"
-     x="5.2330403"
+     x="23.504375"
      y="336.52542"
      style="font-size:8px">p</tspan></text>
+
+
+
 
 
 
@@ -300,12 +312,12 @@
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:8px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#e6e6e6;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
-   x="5.3324943"
+   x="10.937667"
    y="255.31711"
    id="text4012-7"><tspan
      sodipodi:role="line"
      id="tspan4010-3"
-     x="5.3324943"
+     x="10.937667"
      y="255.31711"
      style="font-size:8px;fill:#ffffff;stroke:#e6e6e6;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">OUT</tspan></text>
 
@@ -314,15 +326,18 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:8px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="5.3717217"
+   x="7.3196983"
    y="130.11905"
    id="text4012-7-9"><tspan
      sodipodi:role="line"
      id="tspan4010-3-5"
-     x="5.3717217"
+     x="7.3196983"
      y="130.11905"
      style="font-size:8px">GATE</tspan></text>
 
@@ -331,18 +346,24 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:8px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="-84.035622"
+   x="-78.198761"
    y="11.869076"
    id="text4012-7-9-7"
    transform="rotate(-90)"><tspan
      sodipodi:role="line"
      id="tspan4010-3-5-9"
-     x="-84.035622"
+     x="-78.198761"
      y="11.869076"
-     style="font-size:8px">SIGNAL</tspan></text>
+     style="font-size:8px">HIGH</tspan></text>
+
+
+
 
 
 
@@ -352,15 +373,18 @@
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:8px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-   x="-196.71184"
-   y="11.946304"
+   x="-195.37199"
+   y="12.147575"
    id="text4012-7-9-7-2"
    transform="rotate(-90)"><tspan
      sodipodi:role="line"
      id="tspan4010-3-5-9-5"
-     x="-196.71184"
-     y="11.946304"
-     style="font-size:8px">BASE</tspan></text>
+     x="-195.37199"
+     y="12.147575"
+     style="font-size:8px">LOW</tspan></text>
+
+
+
 
 
 
@@ -384,6 +408,9 @@
 
 
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
@@ -395,6 +422,9 @@
      x="89.502609"
      y="376.22226"
      style="font-size:10.66666698px;text-align:center;text-anchor:middle">noobhour</tspan></text>
+
+
+
 
 
 
@@ -418,6 +448,9 @@
      style="font-size:8px"
      id="tspan4032-5" /></text>
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
@@ -434,6 +467,9 @@
      y="238.15385"
      style="font-size:8px"
      id="tspan4032-5-8" /></text>
+
+
+
 
 <text
    xml:space="preserve"
@@ -452,6 +488,9 @@
      style="font-size:8px"
      id="tspan4032-5-1" /></text>
 
+
+
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:13.33333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
@@ -468,6 +507,9 @@
      y="86.753738"
      style="font-size:8px"
      id="tspan4032-5-8-0" /></text>
+
+
+
 
 </g>
 <g
