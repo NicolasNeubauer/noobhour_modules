@@ -2,14 +2,26 @@
 #include "dsp/digital.hpp"
 #include <vector>
 
-// TODO: Randomize, p
+struct GreenBlueLight : GrayModuleLightWidget {
+	GreenBlueLight() {
+		addBaseColor(COLOR_GREEN);
+		addBaseColor(COLOR_BLUE);
+	}
+};
+
 
 struct CustomScale : Module {
+
+  static const int NUM_OCTAVES = 5;
+  static const int BASE_OCTAVE = 2;
+  static const int NUM_TONES = NUM_OCTAVES * 12;
   
   enum InputIds {
 	SIGNAL_INPUT,
 	TONE_INPUT,
 	TOGGLE_TRIGGER_INPUT,
+	RESET_TRIGGER_INPUT,
+	RANDOMIZE_TRIGGER_INPUT,
 	  
 	NUM_INPUTS
   };
@@ -20,137 +32,182 @@ struct CustomScale : Module {
 	NUM_OUTPUTS	  
   };
 
-  /*
-  enum LightIds {
-	NUM_LIGHTS
-  };
-  */
-
-  /*
   enum ParamIds {
-	TONE1_PARAM
+	TONE1_PARAM,
+	// ...
+	RANGE_PARAM = NUM_TONES,
+	P_PARAM = NUM_TONES + 1,
+	
+	NUM_PARAMS = NUM_TONES + 2
   };
-  */
 
-  static const int NUM_OCTAVES = 5;
-  static const int BASE_OCTAVE = 2; // which column contains the 440Hz A?
-  static const int NUM_PARAMS = NUM_OCTAVES * 12;
-  static const int NUM_LIGHTS = NUM_PARAMS;
-
-  double RATIO = 1.0594630943592953; // pow(2.0, 1.0/12.0) - ratio between one semi-tone and the next
+  enum LightIds {
+	TONE1_LIGHT,
+	// ...
+	
+	NUM_LIGHTS = NUM_TONES * 2 
+  };
 
   SchmittTrigger gateTrigger;
-  SchmittTrigger paramTrigger[NUM_PARAMS];
-  bool state[NUM_PARAMS];
+  SchmittTrigger randomizeTrigger;
+  SchmittTrigger resetTrigger;
+  SchmittTrigger paramTrigger[NUM_TONES];
+  bool state[NUM_TONES];
 
-  CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+	onReset();	
+  }
   
   void step() override;
 
-  float getFrequency(int paramId) const {
-	int octave = paramId / 12;
-	int tone = paramId % 12;
-
-	return octave - BASE_OCTAVE + pow(RATIO, tone);
-	// int distanceFromA = (octave - BASE_OCTAVE) * 12 + tone - 9;
-	// return (octave * 12 + tone) * RATIO;
-	//return 440.f * pow(RATIO, distanceFromA);
+  float getVOct(int toneIndex) const {
+	int octave = toneIndex / 12;
+	int tone = toneIndex % 12;
+	return tone/12.f + octave - BASE_OCTAVE;
   }
 
+  int getTone(float vOct) const {
+	  return static_cast<int>(vOct * 12.f) + 12 * BASE_OCTAVE;
+  }	
 
-	void onReset() override {
-		for (int i = 0; i < NUM_PARAMS; i++) {
-			state[i] = false;
-		}
+  void onReset() override {
+	for (int i = 0; i < NUM_TONES; i++) {
+	  state[i] = false;
 	}
-	void onRandomize() override {
-		for (int i = 0; i < NUM_PARAMS; i++) {
-			state[i] = (randomUniform() < 0.5f);
-		}
-	}
-
-	json_t *toJson() override {
-		json_t *rootJ = json_object();
-		// states
-		json_t *statesJ = json_array();
-		for (int i = 0; i < NUM_PARAMS; i++) {
-			json_t *stateJ = json_boolean(state[i]);
-			json_array_append_new(statesJ, stateJ);
-		}
-		json_object_set_new(rootJ, "states", statesJ);
-		return rootJ;
-	}
-	void fromJson(json_t *rootJ) override {
-		// states
-		json_t *statesJ = json_object_get(rootJ, "states");
-		if (statesJ) {
-			for (int i = 0; i < NUM_PARAMS; i++) {
-				json_t *stateJ = json_array_get(statesJ, i);
-				if (stateJ)
-					state[i] = json_boolean_value(stateJ);
-			}
-		}
-	}
-
+  }
   
+  void onRandomize() override {
+	randomizeTones(params[P_PARAM].value); 
+  }
+
+  void randomizeTones(float p) {
+	for (int i = 0; i < NUM_TONES; i++) {
+	  state[i] = (randomUniform() < p);
+	}	
+  }
+
+  json_t *toJson() override {
+	json_t *rootJ = json_object();
+
+	json_t *statesJ = json_array();
+	for (int i = 0; i < NUM_TONES; i++) {
+	  json_t *stateJ = json_boolean(state[i]);
+	  json_array_append_new(statesJ, stateJ);
+	}
+	json_object_set_new(rootJ, "states", statesJ);
+	return rootJ;
+  }
+  
+  void fromJson(json_t *rootJ) override {
+	json_t *statesJ = json_object_get(rootJ, "states");
+	if (statesJ) {
+	  for (int i = 0; i < NUM_TONES; i++) {
+		json_t *stateJ = json_array_get(statesJ, i);
+		if (stateJ)
+		  state[i] = json_boolean_value(stateJ);
+	  }
+	}
+  }
 
 };
+
 
 template <typename BASE>
 struct MuteLight : BASE {
-	MuteLight() {
-		this->box.size = mm2px(Vec(6.0f, 6.0f));
-	}
+  MuteLight() {
+	this->box.size = mm2px(Vec(6.0f, 6.0f));
+  }
 };
-
-/*
-float CustomScale::getFreqency(int paramId) {
-  int octave = paramId / 12;
-  int tone = paramId % 12;
-  int distanceFromA = (octave - BASE_OCTAVE) * 12 + tone - 10;
-  return 440.f * pow(ratio, distanceFromA);
-}
-*/
 
 
 void CustomScale::step() {
-  
+  // RESET
+  if (inputs[RESET_TRIGGER_INPUT].active) {
+	if (resetTrigger.process(rescale(inputs[RESET_TRIGGER_INPUT].value, 0.1f, 2.f, 0.f, 1.f))) {
+	  onReset();
+	}	
+  }
+
+  // RANDOMIZE
+  if (inputs[RANDOMIZE_TRIGGER_INPUT].active) {
+	if (randomizeTrigger.process(rescale(inputs[RANDOMIZE_TRIGGER_INPUT].value, 0.1f, 2.f, 0.f, 1.f))) {
+	  randomizeTones(params[P_PARAM].value);
+	}		
+  }
+
+  // TOGGLE
   if (inputs[TONE_INPUT].active) {
 	float gate = 0.0;
 	if (inputs[TOGGLE_TRIGGER_INPUT].active)
 	  gate = inputs[TOGGLE_TRIGGER_INPUT].value;
 	if (gateTrigger.process(rescale(gate, 0.1f, 2.f, 0.f, 1.f))) {
-	  float v = inputs[TONE_INPUT].value;
-	  int paramIndex = static_cast<int>(NUM_PARAMS * (v+5.f)/10.f);
-	  if (paramIndex == NUM_PARAMS)
-		paramIndex--;
-	  // TODO: toggle param paramIndex;
+	  int toneIndex = getTone(inputs[TONE_INPUT].value);
+	  if (toneIndex >= 0 && toneIndex < NUM_TONES)
+		state[toneIndex] ^= true;
 	}
   }
 
-  std::vector<int> activeParams;
-  activeParams.reserve(NUM_PARAMS);
-  for (int i=0; i < NUM_PARAMS; i++) {
-	if (paramTrigger[i].process(params[i].value))
-	  state[i] ^= true;
-	if (state[i]) {
-	  activeParams.push_back(i);
-	  lights[i].setBrightness(0.9f);
-	} else {
-	  lights[i].setBrightness(0.0f);	  
-	}	 
+  // OCTAVE RANGE
+  int startTone = 0;
+  int endTone = 0;
+  int numCandidateTones = 0;
+  if (params[RANGE_PARAM].value < 0.5f) {
+	numCandidateTones = NUM_TONES;
+	startTone = 0;
+	endTone = NUM_TONES - 1;
+  } else if (params[RANGE_PARAM].value < 1.5f) {
+	numCandidateTones = NUM_TONES - 24;
+	startTone = 12;
+	endTone = NUM_TONES - 13;
+  } else {
+	numCandidateTones = NUM_TONES - 48;
+	startTone = 24;
+	endTone = NUM_TONES - 25;
   }
 
-  if (!inputs[SIGNAL_INPUT].active || activeParams.size() == 0) {
-	outputs[OUT_OUTPUT].value = 0;
-	return;
-  }  
+  // GATHER CANDIDATES
+  std::vector<int> activeTones;
+  activeTones.reserve(numCandidateTones);
+  for (int i = 0; i < NUM_TONES; i++) {
+	if (paramTrigger[i].process(params[i].value))
+	  state[i] ^= true;
+	if (state[i] && i >= startTone && i <= endTone) {
+	  activeTones.push_back(i);
+	} 	 
+  }
 
-  unsigned int selectedIndex = static_cast<int>(activeParams.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f)+5.f)/10.f);
-  if (selectedIndex == activeParams.size())
-	selectedIndex--;
+  // SELECT TONE
+  float output = 0;
+  int selectedTone = -1;
+  if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
+	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f)+5.f)/10.f);
+	if (selectedIndex == activeTones.size())
+	  selectedIndex--;
+	selectedTone = activeTones[selectedIndex];
+	output = getVOct(selectedTone);
+  }
 
-  outputs[OUT_OUTPUT].value = getFrequency(activeParams[selectedIndex]);
+  // LIGHTS
+  for (int i = 0; i < NUM_TONES; i++) {
+	float green = 0.f;
+	float blue = 0.f;
+	if (state[i]) {
+	  if (i==selectedTone) {
+		blue = 0.9f;
+	  } else {
+		if (i >= startTone && i <= endTone) {
+		  green = 0.9f; // active tone but not selected
+		} else {
+		  green = 0.1f; // active but in inactive octave
+		}		
+	  }
+	}
+	lights[i * 2].setBrightness(green);
+	lights[i * 2 + 1].setBrightness(blue);	  	  	
+  }
+
+  // OUTPUT
+  outputs[OUT_OUTPUT].value = output;
 }
 
 
@@ -164,21 +221,43 @@ struct CustomScaleWidget : ModuleWidget {
 	addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 0)));
 	addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 365)));
 
-	addInput(Port::create<PJ301MPort>(Vec(5, 30), Port::INPUT, module, CustomScale::SIGNAL_INPUT));
-	addInput(Port::create<PJ301MPort>(Vec(5, 130), Port::INPUT, module, CustomScale::TONE_INPUT));
-	addInput(Port::create<PJ301MPort>(Vec(5, 160), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT));
+	// generate controls	
+	int yStart = 21;
+	int yRange = 37;
+	int ySeparator = 19;
+	int x = 10;
 
-	addOutput(Port::create<PJ301MPort>(Vec(5, 60), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
+	float wKnob = 30.23437f;
+	float wInput = 31.58030f;
+	float wSwitch = 17.94267f;	
+	float offsetKnob = wInput - wKnob;
+	float offsetSwitch = (wInput - wSwitch) / 2.0f - 1.5; // no idea why 1.5, not centered otherwise
 
-	for (int octave=0; octave<CustomScale::NUM_OCTAVES; octave++) 
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), Port::INPUT, module, CustomScale::SIGNAL_INPUT));
+	addOutput(Port::create<PJ301MPort>(Vec(x, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
+	addParam(ParamWidget::create<CKSSThree>(Vec(x + offsetSwitch, yStart + 2 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
+	
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TONE_INPUT));
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 4 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
+
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 5 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
+	addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(x + offsetKnob, yStart + 6 * yRange + 2 * ySeparator), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));	  	  
+	
+	addInput(Port::create<PJ301MPort>(Vec(x, 329), Port::INPUT, module, CustomScale::RESET_TRIGGER_INPUT));
+
+	// generate lights
+	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
+	float offsetY = mm2px(Vec(17.32, 18.915)).y - mm2px(Vec(16.57, 18.165)).y;	
+	for (int octave=0; octave<CustomScale::NUM_OCTAVES; octave++) {
+	  float x = 43 + octave * 27;
 	  for (int tone=0; tone<12; tone++) {
-		float x = 35 + octave * 26;
-		float y = 5+26*(12-tone);
-		int index = octave*12 + tone;
+		float y = -5 + 28 * (12 - tone);
+		int index = octave * 12 + tone;
 		
-		addParam(ParamWidget::create<LEDBezel>(Vec(x, y), module, index, 0.0f, 1.0f, 0.0f));
-		addChild(ModuleLightWidget::create<MuteLight<GreenLight>>(Vec(x, y), module, index));
+		addParam(ParamWidget::create<LEDBezel>(Vec(x, y), module, CustomScale::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
+		addChild(ModuleLightWidget::create<MuteLight<GreenBlueLight>>(Vec(x + offsetX, y + offsetY), module, CustomScale::TONE1_PARAM + index * 2));
 	  }
+	}
   };
 };
 
