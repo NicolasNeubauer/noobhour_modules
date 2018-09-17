@@ -9,6 +9,15 @@ struct GreenBlueLight : GrayModuleLightWidget {
 	}
 };
 
+template <typename BASE>
+struct ToneLight : BASE {
+  ToneLight() {
+	this->box.size = mm2px(Vec(6.0f, 6.0f));
+  }
+};
+
+
+
 
 struct CustomScale : Module {
 
@@ -112,12 +121,6 @@ struct CustomScale : Module {
 };
 
 
-template <typename BASE>
-struct MuteLight : BASE {
-  MuteLight() {
-	this->box.size = mm2px(Vec(6.0f, 6.0f));
-  }
-};
 
 
 void CustomScale::step() {
@@ -237,8 +240,8 @@ struct CustomScaleWidget : ModuleWidget {
 	addOutput(Port::create<PJ301MPort>(Vec(x, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
 	addParam(ParamWidget::create<CKSSThree>(Vec(x + offsetSwitch, yStart + 2 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
 	
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TONE_INPUT));
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 4 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 1 * ySeparator + 10), Port::INPUT, module, CustomScale::TONE_INPUT));
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 4 * yRange + 1 * ySeparator + 10), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
 
 	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 5 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
 	addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(x + offsetKnob, yStart + 6 * yRange + 2 * ySeparator), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));	  	  
@@ -255,7 +258,7 @@ struct CustomScaleWidget : ModuleWidget {
 		int index = octave * 12 + tone;
 		
 		addParam(ParamWidget::create<LEDBezel>(Vec(x, y), module, CustomScale::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
-		addChild(ModuleLightWidget::create<MuteLight<GreenBlueLight>>(Vec(x + offsetX, y + offsetY), module, CustomScale::TONE1_PARAM + index * 2));
+		addChild(ModuleLightWidget::create<ToneLight<GreenBlueLight>>(Vec(x + offsetX, y + offsetY), module, CustomScale::TONE1_PARAM + index * 2));
 	  }
 	}
   };

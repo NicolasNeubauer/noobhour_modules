@@ -31,7 +31,7 @@ is an "attenuverter" i.e. also lets you invert the signal as its value
 can be set from -1V to 1V.
 
 
-### High or Low? - Modes and Probabilities 
+### Signal selection
 
 The controls in the darker, lower area of the module can be used to
 modify which signal is returned when.
@@ -56,6 +56,11 @@ knob value (0..1) and the CV input.
   Low with probability p.
 
 
+### Video
+
+Check out [https://www.youtube.com/watch?v=1B4TPm0vFOA], which shows
+Baseliner in action. It serves as a rhythm generator, mixer,
+distorter, melody creator, and drum sequencer.
 
 
 
