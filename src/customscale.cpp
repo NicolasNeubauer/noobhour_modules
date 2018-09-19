@@ -2,12 +2,9 @@
 #include "dsp/digital.hpp"
 #include <vector>
 
-// todo
-// second column of controls
-// - change gate out
-// - reset button
-// - rnd button
-// paging? different pages, back/forth, CV for index selection
+// TODO
+// - layout
+// paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
 
 
 struct GreenBlueLight : GrayModuleLightWidget {
@@ -39,37 +36,48 @@ struct CustomScale : Module {
 	TOGGLE_TRIGGER_INPUT,
 	RESET_TRIGGER_INPUT,
 	RANDOMIZE_TRIGGER_INPUT,
+	BASE_INPUT,
 	  
 	NUM_INPUTS
   };
   
   enum OutputIds {
 	OUT_OUTPUT,
+	CHANGEGATE_OUTPUT,
 	  
 	NUM_OUTPUTS	  
   };
 
   enum ParamIds {
-	TONE1_PARAM,
-	// ...
-	RANGE_PARAM = NUM_TONES,
-	P_PARAM = NUM_TONES + 1,
+	ENUMS(TONE1_PARAM, NUM_TONES),
+	RANGE_PARAM,
+	P_PARAM,
+	RANDOMIZE_BUTTON_PARAM,
+	RESET_BUTTON_PARAM,
+	BASE_PARAM,
 	
-	NUM_PARAMS = NUM_TONES + 2
+	NUM_PARAMS
   };
 
   enum LightIds {
-	TONE1_LIGHT,
-	// ...
+	ENUMS(TONE1_LIGHT, NUM_TONES * 2),
+	ENUMS(RANDOMIZE_LIGHT, 2),	
+	ENUMS(RESET_LIGHT, 2),
 	
-	NUM_LIGHTS = NUM_TONES * 2 
+	NUM_LIGHTS
   };
 
   SchmittTrigger gateTrigger;
   SchmittTrigger randomizeTrigger;
+  SchmittTrigger randomizeButtonTrigger;
   SchmittTrigger resetTrigger;
+  SchmittTrigger resetButtonTrigger;
   SchmittTrigger paramTrigger[NUM_TONES];
+  
+  PulseGenerator changePulse;
+  
   bool state[NUM_TONES];
+  int lastOutput = NUM_TONES; // a value that wouldn't really be returned
 
   CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();	
@@ -139,11 +147,20 @@ void CustomScale::step() {
 	}	
   }
 
+  if (resetButtonTrigger.process(params[RESET_BUTTON_PARAM].value)) {
+	onReset();
+  }
+  
+
   // RANDOMIZE
   if (inputs[RANDOMIZE_TRIGGER_INPUT].active) {
 	if (randomizeTrigger.process(rescale(inputs[RANDOMIZE_TRIGGER_INPUT].value, 0.1f, 2.f, 0.f, 1.f))) {
 	  randomizeTones(params[P_PARAM].value);
 	}		
+  }
+
+  if (randomizeButtonTrigger.process(params[RANDOMIZE_BUTTON_PARAM].value)) {
+	randomizeTones(params[P_PARAM].value);
   }
 
   // TOGGLE
@@ -187,16 +204,29 @@ void CustomScale::step() {
 	} 	 
   }
 
-  // SELECT TONE
+  // FETCH BASE TONE
+  float baseTone = params[BASE_PARAM].value;
+  if (inputs[BASE_INPUT].active) {
+	baseTone += inputs[BASE_INPUT].value / 10.f * 11.f;
+  }
+  int baseToneDiscrete = static_cast<int>(clamp(baseTone, 0.f, 11.f));
+
+  // SELECT TONE  
   float output = 0;
   int selectedTone = -1;
   if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
-	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f)+5.f)/10.f);
+	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f) + 5.f) / 10.f);
 	if (selectedIndex == activeTones.size())
 	  selectedIndex--;
 	selectedTone = activeTones[selectedIndex];
-	output = getVOct(selectedTone);
+	output = getVOct(selectedTone + baseToneDiscrete);
   }
+
+  // DETECT TONE CHANGE
+  if (output != lastOutput) {
+	changePulse.trigger(0.001f);
+	lastOutput = output;
+  }  
 
   // LIGHTS
   for (int i = 0; i < NUM_TONES; i++) {
@@ -219,6 +249,8 @@ void CustomScale::step() {
 
   // OUTPUT
   outputs[OUT_OUTPUT].value = output;
+  outputs[CHANGEGATE_OUTPUT].value = (changePulse.process(1.0f / engineGetSampleRate()) ? 10.0f : 0.0f);
+
 }
 
 
@@ -233,29 +265,38 @@ struct CustomScaleWidget : ModuleWidget {
 	addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 365)));
 
 	// generate controls	
-	int yStart = 21;
-	int yRange = 37;
-	int ySeparator = 19;
-	int x = 10;
+	static const int yStart = 21;
+	static const int yRange = 40;
+	static const int ySeparator = 15;
+	static const int x = 10;
+	static const int x2 = 50;
 
-	float wKnob = 30.23437f;
-	float wInput = 31.58030f;
-	float wSwitch = 17.94267f;	
-	float offsetKnob = wInput - wKnob;
-	float offsetSwitch = (wInput - wSwitch) / 2.0f - 1.5; // no idea why 1.5, not centered otherwise
+	static const float wKnob = 30.23437f;
+	static const float wInput = 31.58030f;
+	static const float wSwitch = 17.94267f;	
+	static const float offsetKnob = wInput - wKnob;
+	static const float offsetSwitch = (wInput - wSwitch) / 2.0f - 1.5; // no idea why 1.5, not centered otherwise
+	static const int offsetTL1005 = 4;
 
 	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), Port::INPUT, module, CustomScale::SIGNAL_INPUT));
+	addParam(ParamWidget::create<CKSSThree>(Vec(x2 + offsetSwitch, yStart + 0 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
 	addOutput(Port::create<PJ301MPort>(Vec(x, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
-	addParam(ParamWidget::create<CKSSThree>(Vec(x + offsetSwitch, yStart + 2 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
-	
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 1 * ySeparator + 10), Port::INPUT, module, CustomScale::TONE_INPUT));
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 4 * yRange + 1 * ySeparator + 10), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
+	addOutput(Port::create<PJ301MPort>(Vec(x2, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::CHANGEGATE_OUTPUT));	
 
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 5 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
-	addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(x + offsetKnob, yStart + 6 * yRange + 2 * ySeparator), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));	  	  
+	
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 2 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TONE_INPUT));
+	addInput(Port::create<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
+
+	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
+	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, yStart + 3 * yRange + 2 * ySeparator + offsetTL1005), module, CustomScale::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));	
+	addParam(ParamWidget::create<RoundBlackKnob>(Vec(x + offsetKnob, yStart + 4 * yRange + 2 * ySeparator), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));
+
+	addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(x + offsetKnob, yStart + 5 * yRange + 3 * ySeparator), module, CustomScale::BASE_PARAM, 0.f, 11.f, 0.f));		
+	addInput(Port::create<PJ301MPort>(Vec(x2, yStart + 5 * yRange + 3 * ySeparator), Port::INPUT, module, CustomScale::BASE_INPUT));
 	
 	addInput(Port::create<PJ301MPort>(Vec(x, 329), Port::INPUT, module, CustomScale::RESET_TRIGGER_INPUT));
-
+	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, 329 + offsetTL1005), module, CustomScale::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
+	
 	// generate lights
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
 	float offsetY = mm2px(Vec(17.32, 18.915)).y - mm2px(Vec(16.57, 18.165)).y;	

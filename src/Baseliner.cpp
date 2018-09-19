@@ -120,7 +120,10 @@ void Baseliner::step() {
 	}
 	
 	bool useSignal = false;
-	float p = clamp((inputs[P1_INPUT + i].active ? inputs[P1_INPUT + i].value : 0) + params[P1_PARAM + i].value, 0.0f, 1.0f);
+	float p_input = 0;
+	if (inputs[P1_INPUT + i].active)
+	  p_input = clamp(inputs[P1_INPUT + i].value / 10.f, -10.f, 10.f);
+	float p = clamp(p_input + params[P1_PARAM + i].value, 0.0f, 1.0f);
 
 	if (mode == MODE_GATE && (1.0 - p < 1e-4)) { // trivial case: gate mode and probability = 1: use signal when gate is on
 		useSignal = gate > 1.0f;
