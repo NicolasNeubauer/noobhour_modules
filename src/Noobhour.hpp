@@ -8,4 +8,3 @@ extern Plugin *plugin;
 
 // Forward-declare each Model, defined in each module source file
 extern Model *modelBaseliner;
-extern Model *modelCustomScale;

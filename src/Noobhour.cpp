@@ -10,5 +10,4 @@ void init(Plugin *p) {
 	p->version = TOSTRING(VERSION);
 
 	p->addModel(modelBaseliner);
-	p->addModel(modelCustomScale);		
 }
