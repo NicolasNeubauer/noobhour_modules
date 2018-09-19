@@ -2,6 +2,14 @@
 #include "dsp/digital.hpp"
 #include <vector>
 
+// todo
+// second column of controls
+// - change gate out
+// - reset button
+// - rnd button
+// paging? different pages, back/forth, CV for index selection
+
+
 struct GreenBlueLight : GrayModuleLightWidget {
 	GreenBlueLight() {
 		addBaseColor(COLOR_GREEN);
@@ -252,7 +260,7 @@ struct CustomScaleWidget : ModuleWidget {
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
 	float offsetY = mm2px(Vec(17.32, 18.915)).y - mm2px(Vec(16.57, 18.165)).y;	
 	for (int octave=0; octave<CustomScale::NUM_OCTAVES; octave++) {
-	  float x = 43 + octave * 27;
+	  float x = 88 + octave * 27;
 	  for (int tone=0; tone<12; tone++) {
 		float y = -5 + 28 * (12 - tone);
 		int index = octave * 12 + tone;
