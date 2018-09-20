@@ -63,9 +63,50 @@ Baseliner in action. It serves as a rhythm generator, mixer,
 distorter, melody creator, and drum sequencer.
 
 ## CustomScale
-
+A customizable and modulatable quantizer.
 
 ![CustomScale](./doc/CustomScale.png)
+
+CustomScale turns a -5V..5V into V/Oct output, scaling the input value
+over the tones selected in the matrix. The center light in the bottom
+row corresponds to a V/Oct output of 0, C4 if fed into an otherwise
+unmodulated oscillator. Each row further up represents one half-tone
+higher, whereas columns to the left and right represent lower and
+higher octaves, respectively.
+
+Next to the matrix, there are two areas with controls; the upper one
+is contains all controls related to playing an existing scale, the
+lower one modifies the scale matrix.
+
+### Playing
+In receives the CV to be turned into V/Oct. 
+
+Oct range controls which of the octaves are used.
+
+c/oct sends the computed V/Oct.
+
+change sends a trigger everytime v/oct changes.
+
+base adds up to 11 half-tones to the output.
+
+base cv expects a -10V..10V input, adding -11 to 11 half-tones to the
+base knobs setting; the final base value will still be 0..11 (C to B,
+if you will).
+
+### Modifying v/oct receives a frequency. If the tone has a
+corresponding light on the matrix, it will be toggled when toggle
+receives a trigger. This means you can control the matrix from e.g. a
+keyboard or a sequencer (or another CustomScale, gasp). The base
+offset is not taken into consideration).
+
+randomize will set the matrix randomly, with the probability of a
+particular light being on controlled by p.
+
+reset will turn off all lights on the matrix. 
+
+
+
+
 
 
 
