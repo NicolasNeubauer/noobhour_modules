@@ -267,35 +267,38 @@ struct CustomScaleWidget : ModuleWidget {
 	// generate controls	
 	static const int yStart = 21;
 	static const int yRange = 40;
-	static const int ySeparator = 15;
-	static const int x = 10;
-	static const int x2 = 50;
+	static const int ySeparator = 5;
+	static const int x = 11.5f;
+	static const int x2 = 46.5f;
 
 	static const float wKnob = 30.23437f;
 	static const float wInput = 31.58030f;
 	static const float wSwitch = 17.94267f;	
-	static const float offsetKnob = wInput - wKnob;
+	static const float offsetKnob = -2.1; 
 	static const float offsetSwitch = (wInput - wSwitch) / 2.0f - 1.5; // no idea why 1.5, not centered otherwise
 	static const int offsetTL1005 = 4;
 
 	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), Port::INPUT, module, CustomScale::SIGNAL_INPUT));
-	addParam(ParamWidget::create<CKSSThree>(Vec(x2 + offsetSwitch, yStart + 0 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
-	addOutput(Port::create<PJ301MPort>(Vec(x, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
-	addOutput(Port::create<PJ301MPort>(Vec(x2, yStart + 1 * yRange + 0 * ySeparator), Port::OUTPUT, module, CustomScale::CHANGEGATE_OUTPUT));	
+	addParam(ParamWidget::create<CKSSThree>(Vec(x2 + offsetSwitch + 4, yStart + 0 * yRange + 0 * ySeparator), module, CustomScale::RANGE_PARAM, 0.f, 2.f, 0.f));
+	
+	addOutput(Port::create<PJ301MPort>(Vec(x, yStart + 1 * yRange + 1 * ySeparator), Port::OUTPUT, module, CustomScale::OUT_OUTPUT));
+	addOutput(Port::create<PJ301MPort>(Vec(x2, yStart + 1 * yRange + 1 * ySeparator), Port::OUTPUT, module, CustomScale::CHANGEGATE_OUTPUT));	
+
+	addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(x + offsetKnob, yStart + 2 * yRange + 2 * ySeparator + offsetKnob), module, CustomScale::BASE_PARAM, 0.f, 11.f, 0.f));		
+	addInput(Port::create<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::BASE_INPUT));
 
 	
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 2 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TONE_INPUT));
-	addInput(Port::create<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 1 * ySeparator), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
+	addInput(Port::create<PJ301MPort>(Vec(x, 329 - (3 * yRange + 2 * ySeparator)), Port::INPUT, module, CustomScale::TONE_INPUT));
+	addInput(Port::create<PJ301MPort>(Vec(x2, 329 - (3 * yRange + 2 * ySeparator)), Port::INPUT, module, CustomScale::TOGGLE_TRIGGER_INPUT)); 
 
-	addInput(Port::create<PJ301MPort>(Vec(x, yStart + 3 * yRange + 2 * ySeparator), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
-	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, yStart + 3 * yRange + 2 * ySeparator + offsetTL1005), module, CustomScale::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));	
-	addParam(ParamWidget::create<RoundBlackKnob>(Vec(x + offsetKnob, yStart + 4 * yRange + 2 * ySeparator), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));
+	addInput(Port::create<PJ301MPort>(Vec(x, 329 - (2 * yRange + 1 * ySeparator)), Port::INPUT, module, CustomScale::RANDOMIZE_TRIGGER_INPUT));
+	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, 329 - (2 * yRange + 1 * ySeparator - offsetTL1005)), module, CustomScale::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));			
+	addParam(ParamWidget::create<RoundBlackKnob>(Vec(x + offsetKnob, 329 - (1 * yRange + 1 * ySeparator - offsetKnob) - 2), module, CustomScale::P_PARAM, 0.f, 1.f, 0.5f));
 
-	addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(x + offsetKnob, yStart + 5 * yRange + 3 * ySeparator), module, CustomScale::BASE_PARAM, 0.f, 11.f, 0.f));		
-	addInput(Port::create<PJ301MPort>(Vec(x2, yStart + 5 * yRange + 3 * ySeparator), Port::INPUT, module, CustomScale::BASE_INPUT));
-	
+
+	// 329
 	addInput(Port::create<PJ301MPort>(Vec(x, 329), Port::INPUT, module, CustomScale::RESET_TRIGGER_INPUT));
-	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, 329 + offsetTL1005), module, CustomScale::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
+	addParam(ParamWidget::create<TL1105>(Vec(x2 + offsetTL1005, 329  + offsetTL1005), module, CustomScale::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
 	
 	// generate lights
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
