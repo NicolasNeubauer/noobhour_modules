@@ -58,9 +58,11 @@ knob value (0..1) and the CV input.
 
 ### Video
 
-Check out [https://www.youtube.com/watch?v=1B4TPm0vFOA], which shows
-Baseliner in action. It serves as a rhythm generator, mixer,
-distorter, melody creator, and drum sequencer.
+Check out the video below, which shows Baseliner in action. It serves
+as a rhythm generator, mixer, distorter, melody creator, and drum
+sequencer.
+
+[![Baseliner demo](http://img.youtube.com/vi/1B4TPm0vFOA/0.jpg)](http://www.youtube.com/watch?v=1B4TPm0vFOA)
 
 ## CustomScale
 A customizable and writable quantizer.
