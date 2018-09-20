@@ -96,10 +96,8 @@ lower one modifies the scale matrix.
   trigger. This means you can control the matrix from e.g. a keyboard
   or a sequencer (or another CustomScale, gasp). The *base* offset is
   not taken into consideration).
-  
 - *randomize* will set the matrix randomly, with the probability of a
-particular light being on controlled by *p*.
-
+  particular light being on controlled by *p*.
 - *reset* will turn off all lights on the matrix. 
 
 
