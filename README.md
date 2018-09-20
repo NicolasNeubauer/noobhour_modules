@@ -1,5 +1,5 @@
 # noobhour modules
-A collection of one module for [VCV Rack](https://github.com/VCVRack/Rack).
+A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack).
 
 ## Baseliner
 A 4x probabilistic attenuverting switch. 
@@ -61,6 +61,11 @@ knob value (0..1) and the CV input.
 Check out [https://www.youtube.com/watch?v=1B4TPm0vFOA], which shows
 Baseliner in action. It serves as a rhythm generator, mixer,
 distorter, melody creator, and drum sequencer.
+
+## CustomScale
+
+
+![CustomScale](./doc/CustomScale.png)
 
 
 
