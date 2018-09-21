@@ -77,7 +77,7 @@ struct CustomScale : Module {
   PulseGenerator changePulse;
   
   bool state[NUM_TONES];
-  int lastOutput = NUM_TONES; // a value that wouldn't really be returned
+  int lastFinalTone = NUM_TONES;
 
   CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	onReset();	
@@ -213,19 +213,21 @@ void CustomScale::step() {
 
   // SELECT TONE  
   float output = 0;
-  int selectedTone = -1;
+  int selectedTone = NUM_TONES;
+  int finalTone = NUM_TONES;
   if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
 	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f) + 5.f) / 10.f);
 	if (selectedIndex == activeTones.size())
 	  selectedIndex--;
 	selectedTone = activeTones[selectedIndex];
-	output = getVOct(selectedTone + baseToneDiscrete);
+	finalTone = selectedTone + baseToneDiscrete;
+	output = getVOct(finalTone);
   }
 
   // DETECT TONE CHANGE
-  if (output != lastOutput) {
+  if (finalTone != lastFinalTone) {
 	changePulse.trigger(0.001f);
-	lastOutput = output;
+	lastFinalTone = finalTone;
   }  
 
   // LIGHTS
@@ -268,10 +270,10 @@ struct CustomScaleWidget : ModuleWidget {
 	static const int yStart = 21;
 	static const int yRange = 40;
 	static const int ySeparator = 5;
-	static const int x = 11.5f;
-	static const int x2 = 46.5f;
+	static const float x = 11.5f;
+	static const float x2 = 46.5f;
 
-	static const float wKnob = 30.23437f;
+	// static const float wKnob = 30.23437f;
 	static const float wInput = 31.58030f;
 	static const float wSwitch = 17.94267f;	
 	static const float offsetKnob = -2.1; 
