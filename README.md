@@ -69,14 +69,14 @@ A customizable and writable quantizer.
 
 ![CustomScale](./doc/CustomScale.png)
 
-CustomScale turns a -5V..5V into V/Oct output, scaling the input value
-over the tones selected in the matrix. The center light in the bottom
-row corresponds to a V/Oct output of 0, C4 if fed into an otherwise
-unmodulated oscillator. Each row further up represents one half-tone
-higher, whereas columns to the left and right represent lower and
-higher octaves, respectively.
+CustomScale turns a 0V..10V input into V/Oct output, scaling the input
+value over the tones selected in the matrix. The center light in the
+bottom row corresponds to a V/Oct output of 0, C4 if fed into an
+otherwise unmodulated oscillator. Each row further up represents one
+half-tone higher, whereas columns to the left and right represent
+lower and higher octaves, respectively.
 
-Next to the matrix, there are two areas with controls; the upper one
+Next to the matrix, there are two areas with controls: The upper one
 contains all controls related to playing an existing scale, the
 lower one modifies the scale matrix.
 
