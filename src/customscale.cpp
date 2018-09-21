@@ -216,7 +216,7 @@ void CustomScale::step() {
   int selectedTone = NUM_TONES;
   int finalTone = NUM_TONES;
   if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
-	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, -5.f, 5.f) + 5.f) / 10.f);
+	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, 0.f, 10.f)) / 10.f);
 	if (selectedIndex == activeTones.size())
 	  selectedIndex--;
 	selectedTone = activeTones[selectedIndex];
