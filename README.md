@@ -28,7 +28,7 @@ as their respective input * *att* + *abs*. If no input is given, this
 lets you dial in a constant value via *abs* (-5V..5V). Once you provide
 an input, you can offset it using *abs* and attenuate it via *att*, which
 is an "attenuverter" i.e. also lets you invert the signal as its value
-can be set from -1 to 1.
+can be set from -1 to 1. Outputs are clipped to -10V..10V.
 
 
 ### Signal selection
