@@ -174,7 +174,7 @@ void Baseliner::step() {
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 1.0;	  
 	}
-	float output = clamp(input * param + absVal, -5.f, 5.f);
+	float output = clamp(input * param + absVal, -10.f, 10.f);
 	
 	outputs[OUT1_OUTPUT + i].value = output;	
   }
