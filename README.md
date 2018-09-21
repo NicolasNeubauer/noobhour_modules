@@ -77,8 +77,8 @@ half-tone higher, whereas columns to the left and right represent
 lower and higher octaves, respectively.
 
 Next to the matrix, there are two areas with controls: The upper one
-contains all controls related to playing an existing scale, the
-lower one modifies the scale matrix.
+contains all controls related to playing an existing scale, the lower
+one modifies the scale matrix.
 
 ### Playing
 
