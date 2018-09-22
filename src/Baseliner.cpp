@@ -236,4 +236,4 @@ struct BaselinerWidget : ModuleWidget {
 };
 
 
-Model *modelBaseliner = Model::create<Baseliner, BaselinerWidget>("noobhour", "baseliner", "Baseliner", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG);
+Model *modelBaseliner = Model::create<Baseliner, BaselinerWidget>("noobhour", "baseliner", "Baseliner", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG, QUAD_TAG);
