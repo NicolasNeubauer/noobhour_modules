@@ -78,8 +78,15 @@ struct CustomScale : Module {
   
   bool state[NUM_TONES];
   int lastFinalTone = NUM_TONES;
+  int lastStartTone = NUM_TONES;
+  int lastSelectedTone = NUM_TONES; 
+
+  std::vector<int> activeTones;
+  bool activeTonesDirty = true;
+
 
   CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+	activeTones.reserve(NUM_TONES);
 	onReset();	
   }
   
@@ -99,6 +106,7 @@ struct CustomScale : Module {
 	for (int i = 0; i < NUM_TONES; i++) {
 	  state[i] = false;
 	}
+	activeTonesDirty = true;
   }
   
   void onRandomize() override {
@@ -108,7 +116,8 @@ struct CustomScale : Module {
   void randomizeTones(float p) {
 	for (int i = 0; i < NUM_TONES; i++) {
 	  state[i] = (randomUniform() < p);
-	}	
+	}
+	activeTonesDirty = true;
   }
 
   json_t *toJson() override {
@@ -132,6 +141,7 @@ struct CustomScale : Module {
 		  state[i] = json_boolean_value(stateJ);
 	  }
 	}
+	activeTonesDirty = true;
   }
 
 };
@@ -170,39 +180,49 @@ void CustomScale::step() {
 	  gate = inputs[TOGGLE_TRIGGER_INPUT].value;
 	if (gateTrigger.process(rescale(gate, 0.1f, 2.f, 0.f, 1.f))) {
 	  int toneIndex = getTone(inputs[TONE_INPUT].value);
-	  if (toneIndex >= 0 && toneIndex < NUM_TONES)
+	  if (toneIndex >= 0 && toneIndex < NUM_TONES) {
 		state[toneIndex] ^= true;
+		activeTonesDirty = true;
+	  }
 	}
   }
 
   // OCTAVE RANGE
   int startTone = 0;
   int endTone = 0;
-  int numCandidateTones = 0;
   if (params[RANGE_PARAM].value < 0.5f) {
-	numCandidateTones = NUM_TONES;
 	startTone = 0;
 	endTone = NUM_TONES - 1;
   } else if (params[RANGE_PARAM].value < 1.5f) {
-	numCandidateTones = NUM_TONES - 24;
 	startTone = 12;
 	endTone = NUM_TONES - 13;
   } else {
-	numCandidateTones = NUM_TONES - 48;
 	startTone = 24;
 	endTone = NUM_TONES - 25;
   }
+  if (startTone != lastStartTone) {
+	activeTonesDirty = true;
+	lastStartTone = startTone;
+  }
+
+  // CHECK TONE TOGGLES
+  for (int i = 0; i < NUM_TONES; i++) {
+	if (paramTrigger[i].process(params[i].value)) {
+	  state[i] ^= true;
+	  activeTonesDirty = true;
+	}
+  }
 
   // GATHER CANDIDATES
-  std::vector<int> activeTones;
-  activeTones.reserve(numCandidateTones);
-  for (int i = 0; i < NUM_TONES; i++) {
-	if (paramTrigger[i].process(params[i].value))
-	  state[i] ^= true;
-	if (state[i] && i >= startTone && i <= endTone) {
-	  activeTones.push_back(i);
-	} 	 
+  if (activeTonesDirty) {	
+	activeTones.clear();
+	for (int i = 0; i < NUM_TONES; i++) {
+	  if (state[i] && i >= startTone && i <= endTone) {
+		activeTones.push_back(i);
+	  } 	 
+	}
   }
+  
 
   // FETCH BASE TONE
   float baseTone = params[BASE_PARAM].value;
@@ -231,24 +251,28 @@ void CustomScale::step() {
   }  
 
   // LIGHTS
-  for (int i = 0; i < NUM_TONES; i++) {
-	float green = 0.f;
-	float blue = 0.f;
-	if (state[i]) {
-	  if (i==selectedTone) {
-		blue = 0.9f;
-	  } else {
-		if (i >= startTone && i <= endTone) {
-		  green = 0.9f; // active tone but not selected
+  if (activeTonesDirty || selectedTone != lastSelectedTone) {
+	for (int i = 0; i < NUM_TONES; i++) {
+	  float green = 0.f;
+	  float blue = 0.f;
+	  if (state[i]) {
+		if (i==selectedTone) {
+		  blue = 0.9f;
 		} else {
-		  green = 0.1f; // active but in inactive octave
-		}		
+		  if (i >= startTone && i <= endTone) {
+			green = 0.9f; // active tone but not selected
+		  } else {
+			green = 0.1f; // active but in inactive octave
+		  }		
+		}
 	  }
+	  lights[i * 2].setBrightness(green);
+	  lights[i * 2 + 1].setBrightness(blue);
 	}
-	lights[i * 2].setBrightness(green);
-	lights[i * 2 + 1].setBrightness(blue);	  	  	
   }
-
+  activeTonesDirty = false; // only reset after check for lights has been done
+  lastSelectedTone = selectedTone; 
+  
   // OUTPUT
   outputs[OUT_OUTPUT].value = output;
   outputs[CHANGEGATE_OUTPUT].value = (changePulse.process(1.0f / engineGetSampleRate()) ? 10.0f : 0.0f);
