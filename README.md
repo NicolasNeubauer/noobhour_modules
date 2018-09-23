@@ -55,6 +55,11 @@ knob value (0..1) and the CV input.
   triggers, the output switches from *Low* to *High* or from *High* to
   *Low* with probability *p*.
 
+### Patching suggestions
+
+If you don't provide any input but just raise *High*'s *abs* value,
+gate triggers will create another gate trigger at the output, allowing
+you to e.g. modify the probability of the trigger passing through.
 
 ### Video
 
@@ -70,11 +75,13 @@ A customizable and writable quantizer.
 ![CustomScale](./doc/CustomScale.png)
 
 CustomScale turns a 0V..10V input into V/Oct output, scaling the input
-value over the tones selected in the matrix. The center light in the
-bottom row corresponds to a V/Oct output of 0, C4 if fed into an
-otherwise unmodulated oscillator. Each row further up represents one
-half-tone higher, whereas columns to the left and right represent
-lower and higher octaves, respectively.
+value over the tones selected in the matrix. The input is distributed
+evenly over the activated tones, so if you have CDEF activated, 0-2.5V
+will trigger the C, 2.5001V-5V will trigger D and so on. The center
+light in the bottom row corresponds to a V/Oct output of 0, C4 if fed
+into an otherwise unmodulated oscillator. Each row further up
+represents one half-tone higher, whereas columns to the left and right
+represent lower and higher octaves, respectively.
 
 Next to the matrix, there are two areas with controls: The upper one
 contains all controls related to playing an existing scale, the lower
