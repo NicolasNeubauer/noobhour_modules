@@ -103,9 +103,13 @@ one modifies the scale matrix.
 - *reset* will turn off all lights on the matrix. 
 
 
+### Videos
 
+Check out the video below, which shows several instances of CustomScale in action.
+[![CustomScale demo](http://img.youtube.com/vi/rC2DJ2JbXHE/0.jpg)](http://www.youtube.com/watch?v=rC2DJ2JbXHE)
 
-
+The video below shows some less conventional uses of CustomScale
+[![CustomScale demo](http://img.youtube.com/vi/ja4_e43hRFA/0.jpg)](http://www.youtube.com/watch?v=ja4_e43hRFA)
 
 
 

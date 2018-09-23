@@ -222,7 +222,6 @@ void CustomScale::step() {
 	  } 	 
 	}
   }
-  
 
   // FETCH BASE TONE
   float baseTone = params[BASE_PARAM].value;
