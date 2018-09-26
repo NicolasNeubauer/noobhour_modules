@@ -9,6 +9,7 @@
 // copy between octaves?
 // activate octaves directly
 // bsl1r
+// bus
 // change rings around lights for black/white distinction - steve baker 
 // paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
 

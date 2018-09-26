@@ -59,7 +59,8 @@ knob value (0..1) and the CV input.
 
 All the inputs are normalized to the left and the outputs are normalized to the right:
 
-- Any unpatched input (*Gate*, *High* or *Low*) will receive its value from its first patched input from the left.
+- Any unpatched input (*Gate*, *High* or *Low*) will receive its value
+  from its first patched input from the left.
 - Any unpatched output will contribute its value to the right. The
   next patched output will return the average of its own value plus
   all potential unpatched outputs to its left (until there's another
@@ -134,6 +135,9 @@ The video below shows some less conventional uses of CustomScale
 [![CustomScale demo](http://img.youtube.com/vi/ja4_e43hRFA/0.jpg)](http://www.youtube.com/watch?v=ja4_e43hRFA)
 
 
+## Acknowledgements 
 
-
-
+Thanks to Andrew Belt for creating VCV Rack and the surrounding
+communities. Thanks to Jean-Sebastien Monzani, Dave Phillips, Mateusz
+Jedrzejewski, Existentia Virae, Alfredo Santamaria, Lars Bjerregaard,
+Patrick McIlveen for testing, helpful feedback and feature requests.
