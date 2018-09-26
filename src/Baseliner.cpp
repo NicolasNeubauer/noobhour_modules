@@ -167,15 +167,25 @@ void Baseliner::step() {
 	float param = 0.0f;
 	float absVal = 0.0f;
 	if (useSignal) {
-	  if (inputs[SIGNAL1_INPUT + i].active) 
-		input = inputs[SIGNAL1_INPUT + i].value;
+	  // daisy-chain inputs
+	  for (int j = i; j >= 0; j--) {
+		if (inputs[SIGNAL1_INPUT + j].active) {
+		  input = inputs[SIGNAL1_INPUT + j].value;
+		  break;
+		}
+	  }	  
 	  param = params[SIGNAL1_PARAM + i].value;
 	  absVal = params[SIGNAL1ABS_PARAM + i].value;
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 1.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 0.0;
 	} else {
-	  if (inputs[BASE1_INPUT + i].active) 
-		input = inputs[BASE1_INPUT + i].value;
+	  // daisy-chain inputs
+	  for (int j = i; j >= 0; j--) {
+		if (inputs[BASE1_INPUT + j].active) {
+		  input = inputs[BASE1_INPUT + j].value;
+		  break;
+		}
+	  }	  	  
 	  param = params[BASE1_PARAM + i].value;
 	  absVal = params[BASE1ABS_PARAM + i].value;
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;
