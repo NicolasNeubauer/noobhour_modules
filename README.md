@@ -54,13 +54,28 @@ knob value (0..1) and the CV input.
 - In *Toggle* mode, *Gate* is only used as a trigger as well: When it
   triggers, the output switches from *Low* to *High* or from *High* to
   *Low* with probability *p*.
+  
+### Daisy-chaining
+
+All the inputs are normalized to the left and the outputs are normalized to the right:
+
+- Any unpatched input (*Gate*, *High* or *Low*) will receive its value from its first patched input from the left.
+- Any unpatched output will contribute its value to the right. The
+  next patched output will return the average of its own value plus
+  all potential unpatched outputs to its left (until there's another
+  patched output to the left).
+
 
 ### Patching suggestions
 
-If you don't provide any input but just raise *High*'s *abs* value,
-gate triggers will create another gate trigger at the output, allowing
-you to e.g. modify the probability of the trigger passing through.
-
+- If you don't provide any input but just raise *High*'s *abs* value,
+  gate triggers will create another gate trigger at the output,
+  allowing you to e.g. modify the probability of the trigger passing
+  through.
+- If you send signals only to *Low* and patch the right-most output,
+  you have an improvised mixer where *att* controls the volume.
+  
+  
 ### Video
 
 Check out the video below, which shows Baseliner in action. It serves
