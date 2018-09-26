@@ -103,11 +103,18 @@ struct Baseliner : Module {
 
 
 void Baseliner::step() {
-
-  for (int i = 0; i < Baseliner::NUM_COLUMNS; i++) {
+  float outputs_cache[NUM_COLUMNS];
+  
+  for (int i = 0; i < NUM_COLUMNS; i++) {
 	float gate = 0.0;
-	if (inputs[GATE1_INPUT + i].active)
-	  gate = inputs[GATE1_INPUT + i].value;
+
+	// If gate isn't active, use an earlier, active gate's input (daisy-chaining)
+	for (int j = i; j >= 0; j--) {
+	  if (inputs[GATE1_INPUT + j].active) {
+		gate = inputs[GATE1_INPUT + j].value;
+		break;
+	  }
+	}
 	
 	float modeFloat = params[MODE1_PARAM + i].value;
 	int mode = 0;
@@ -175,9 +182,24 @@ void Baseliner::step() {
 	  lights[BASE1_LIGHT_POS + 2*i].value = 1.0;	  
 	}
 	float output = clamp(input * param + absVal, -10.f, 10.f);
-	
-	outputs[OUT1_OUTPUT + i].value = output;	
+
+	outputs_cache[i] = output;
   }
+
+  // daisy-chain outputs
+  int stackOutputs = 0;
+  float stacked = 0.f;
+  for (int i=0; i < NUM_COLUMNS; i++) {
+	if (outputs[OUT1_OUTPUT + i].active) {
+	  outputs[OUT1_OUTPUT + i].value = (stacked + outputs_cache[i]) / (stackOutputs+1);
+	  stacked = 0.f;
+	  stackOutputs = 0;
+	} else {
+	  stackOutputs += 1;
+	  stacked += outputs_cache[i];
+	}
+  }
+
 
 }
 
