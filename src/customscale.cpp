@@ -3,8 +3,15 @@
 #include <vector>
 
 // TODO
-// - layout
 // paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
+// attenuator? or context menu switch between 0-10 and -5..5 - Pyer Cllrd
+// random subset (randomize activity of individual tones) - Pyer Cllrd
+// scale file loader - Latif Fital
+// copy between octaves?
+// activate octaves directly
+// bsl1r
+// change rings around lights for black/white distinction - steve baker 
+
 
 
 struct GreenBlueLight : GrayModuleLightWidget {
