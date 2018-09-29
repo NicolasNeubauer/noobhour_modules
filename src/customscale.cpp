@@ -134,6 +134,8 @@ struct CustomScale : Module {
   std::vector<int> activeTones;
   bool activeTonesDirty = true;
 
+  bool bipolarInput = false;
+
 
   CustomScale() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 	activeTones.reserve(NUM_TONES);
@@ -364,7 +366,7 @@ void CustomScale::step() {
   // FETCH BASE TONE
   float baseTone = params[BASE_PARAM].value;
   if (inputs[BASE_INPUT].active) {
-	baseTone += inputs[BASE_INPUT].value / 10.f * 11.f;
+	baseTone +=  inputs[BASE_INPUT].value / 10.f * 11.f;
   }
   int baseToneDiscrete = static_cast<int>(clamp(baseTone, 0.f, 11.f));
 
@@ -373,7 +375,10 @@ void CustomScale::step() {
   int selectedTone = NUM_TONES;
   int finalTone = NUM_TONES;
   if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
-	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inputs[SIGNAL_INPUT].value, 0.f, 10.f)) / 10.f);
+	float inp = inputs[SIGNAL_INPUT].value;
+	if (bipolarInput)
+	  inp += 5.f;
+	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inp, 0.f, 10.f)) / 10.f);
 	if (selectedIndex == activeTones.size())
 	  selectedIndex--;
 	selectedTone = activeTones[selectedIndex];
@@ -507,6 +512,25 @@ struct CustomScaleWidget : ModuleWidget {
 		*/
 	  }
 	}
+  };
+
+  void appendContextMenu(Menu *menu) override {
+	CustomScale *customScale = dynamic_cast<CustomScale*>(module);
+	assert(customScale);
+	
+	struct UniBiItem : MenuItem {
+	  CustomScale *customScale;
+	  void onAction(EventAction &e) override {
+		customScale->bipolarInput ^= true;;
+	  }
+	  void step() override {
+		rightText = customScale->bipolarInput ? "-5V..5V" : "0V..10V";
+		MenuItem::step();
+	  }
+	};
+	
+	menu->addChild(construct<MenuLabel>());
+	menu->addChild(construct<UniBiItem>(&MenuItem::text, "Signal input", &UniBiItem::customScale, customScale));
   };
 };
 
