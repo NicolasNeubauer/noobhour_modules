@@ -1,5 +1,9 @@
 # noobhour modules
-A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack).
+A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack):
+
+- **Baseliner**, a 4x probabilistic attenuverting switch. 
+- **CustomScale**, a quantizer for custom, CV-modifyable scales.
+
 ![All](./doc/all.png)
 
 
@@ -88,7 +92,7 @@ sequencer.
 [![Baseliner demo](http://img.youtube.com/vi/1B4TPm0vFOA/0.jpg)](http://www.youtube.com/watch?v=1B4TPm0vFOA)
 
 ## CustomScale
-A quantizer for custom, CV-modifyable scales.
+A quantizer for custom, CV-modifiable scales.
 
 ![CustomScale](./doc/CustomScale.png)
 
