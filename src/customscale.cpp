@@ -12,12 +12,12 @@
 // - button back for randomization
 
 // TODO
-// attenuator? or context menu switch between 0-10 and -5..5 - Pyer Cllrd
 
 // IN PROGRESS
 // bus
 
 // DONE
+// context menu switch between 0-10 and -5..5 - (was attenuator - Pyer Cllrd)
 // Normalizing the gate input to all following inputs (with nothing plugged in them) would be amazing (instead of 4 copies of the same cable) Patrick McIlveen
 // Normalized HIGH and LOW inputs as well
 // Normalizing all of the outputs to the last one (a la AS 4ch baby mixer and Audible) Patrick McIlveen
