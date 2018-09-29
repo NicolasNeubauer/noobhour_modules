@@ -146,14 +146,16 @@ one modifies the scale matrix.
   
 - **p** and **latch/toggle** determine the behaviour when **random** is triggered.
 
-	**p** is computed as the sum of the knob value and the CV input, clamped to 0..1.
+	**p** is computed as the sum of the knob value and the CV input,
+    clamped to 0..1.
 
-	In **latch** mode, a tone will be activated with **p** probability.
+	In **latch** mode, a tone will be activated with probability
+    **p**.
 	
-	In **toggle** mode, a tone will be *toggled* with **p**
-    probability. This lets you, for example, create slowly changes in
-    the scale over time, versus a complete re-roll on every **random**
-    trigger as created by the **latch** mode. 
+	In **toggle** mode, a tone will be *toggled* with probability
+    **p**. This lets you, for example, create slowly changes in the
+    scale over time, versus a complete re-roll on every **random**
+    trigger as created by the **latch** mode.
 	
 	As noted in the **Baseliner** documentation, this behaviour is modeled
 	after the Bernoulli gate / Branches module.
