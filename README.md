@@ -86,7 +86,7 @@ sequencer.
 [![Baseliner demo](http://img.youtube.com/vi/1B4TPm0vFOA/0.jpg)](http://www.youtube.com/watch?v=1B4TPm0vFOA)
 
 ## CustomScale
-A customizable and writable quantizer.
+A quantizer for custom, CV-modifyable scales.
 
 ![CustomScale](./doc/CustomScale.png)
 
@@ -94,8 +94,8 @@ A customizable and writable quantizer.
 the input value over the tones selected in the matrix. By default, it
 expects a 0V..10V input, but the context menu allows to switch to
 -5V..5V inputs. The input is distributed evenly over the activated
-tones, so if you have CDEF activated, 0-2.5V will trigger the C,
-2.5001V-5V will trigger D and so on. The center light in the bottom
+tones, so if you have CDEF activated, 0-2.499...V will trigger the C,
+2.5V-4.99...V will trigger D and so on. The center light in the bottom
 row corresponds to a V/Oct output of 0, C4 if fed into an otherwise
 unmodulated oscillator. Each row further up represents one half-tone
 higher, whereas columns to the left and right represent lower and
