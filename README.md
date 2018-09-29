@@ -2,7 +2,7 @@
 A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack):
 
 - **Baseliner**, a 4x probabilistic attenuverting switch. 
-- **CustomScale**, a quantizer for custom, CV-modifyable scales.
+- **CustomScale**, a quantizer for custom, CV-modifiable scales.
 
 ![All](./doc/all.png)
 
