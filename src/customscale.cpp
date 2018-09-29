@@ -2,16 +2,20 @@
 #include "dsp/digital.hpp"
 #include <vector>
 
-// TODO
-// attenuator? or context menu switch between 0-10 and -5..5 - Pyer Cllrd
+
+// TODO LATER
 // scale file loader - Latif Fital
 // bsl1r
-// paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
+// CustomScale Pro
+// - paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
+// - quad
+// - button back for randomization
+
+// TODO
+// attenuator? or context menu switch between 0-10 and -5..5 - Pyer Cllrd
 
 // IN PROGRESS
 // bus
-// change rings around lights for black/white distinction - steve baker 
-
 
 // DONE
 // Normalizing the gate input to all following inputs (with nothing plugged in them) would be amazing (instead of 4 copies of the same cable) Patrick McIlveen
@@ -19,6 +23,7 @@
 // Normalizing all of the outputs to the last one (a la AS 4ch baby mixer and Audible) Patrick McIlveen
 // Performance imporvement CustomScale
 // random subset (randomize activity of individual tones) - Pyer Cllrd
+// ended up with lines on I, IV, V, was: change rings around lights for black/white distinction - steve baker 
 
 
 
@@ -424,7 +429,7 @@ void CustomScale::step() {
 
 struct CustomScaleWidget : ModuleWidget {
   // generate controls	
-  const int yStart = 21;
+  const int yStart = 25;
   const int yRange = 40;
   const int ySeparator = 5;
   const float x = 11.5f;
