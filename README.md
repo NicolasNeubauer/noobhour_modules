@@ -128,7 +128,7 @@ one modifies the scale matrix.
   on the matrix, it will be toggled when **toggle** receives a
   trigger. This means you can control the matrix from e.g. a keyboard
   or a sequencer (or another **CustomScale**, gasp). The **base** offset is
-  not taken into consideration).
+  not taken into consideration.
 - **random** randomizes which tones are selected in the matrix,
   according to **p** and **latch/toggle**, see below. 
   
@@ -137,7 +137,7 @@ one modifies the scale matrix.
   off, it will remain a "candidate" (yellow), such that at a future
   **random** trigger, it will be reconsidered for activation. Like
   this, you can define a
-  scale and randomly select parts of it using this function.  
+  scale and randomly select parts of it using this function.
   
   If no tone is active when **random** receives a trigger, all tones
   become candidates, such that a truly random selection across all
