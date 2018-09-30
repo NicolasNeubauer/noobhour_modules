@@ -138,13 +138,13 @@
    inkscape:window-height="1017"
    id="namedview278"
    showgrid="true"
-   inkscape:zoom="19.873685"
-   inkscape:cx="47.66641"
-   inkscape:cy="344.2247"
+   inkscape:zoom="1.7566022"
+   inkscape:cx="167.29027"
+   inkscape:cy="211.44642"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="layer5"
+   inkscape:current-layer="layer7"
    inkscape:measure-start="27.3255,163.668"
    inkscape:measure-end="27.3255,27.6101"
    showguides="true"
@@ -422,7 +422,8 @@
      id="tspan5046-3"
      x="113.2925"
      y="14.034941"
-     style="font-size:10.66666698px;text-align:center;text-anchor:middle">CustomScale</tspan></text>
+     style="font-size:10.66666698px;text-align:center;text-anchor:middle">Customscaler</tspan></text>
+
 
 
 
@@ -712,6 +713,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -728,6 +730,7 @@
      y="83.69574"
      style="font-size:8px"
      id="tspan182" /></text>
+
 
 
 
@@ -767,6 +770,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -778,6 +782,7 @@
      y="50.87915"
      style="font-size:8px"
      id="tspan134-2">5</tspan></text>
+
 
 
 
@@ -817,6 +822,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none"
@@ -828,6 +834,7 @@
      x="13.148337"
      y="151.34538"
      style="font-size:8px;fill:#ffffff">v/oct </tspan></text>
+
 
 
 
@@ -867,6 +874,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -878,6 +886,7 @@
      x="19.919821"
      y="62.669445"
      style="font-size:8px">in</tspan></text>
+
 
 
 
@@ -920,6 +929,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -931,6 +941,7 @@
      x="13.232322"
      y="235.52116"
      style="font-size:8px;fill:#000000">v/oct</tspan></text>
+
 
 
 
@@ -976,6 +987,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -987,6 +999,7 @@
      x="38.950447"
      y="277.6467"
      style="font-size:8px;fill:#000000">p</tspan></text>
+
 
 
 
@@ -1026,6 +1039,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -1037,6 +1051,7 @@
      x="92.958748"
      y="363.45386"
      style="font-size:8px;fill:#000000">-2</tspan></text>
+
 
 
 
@@ -1076,6 +1091,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -1087,6 +1103,7 @@
      x="150.64186"
      y="363.39136"
      style="font-size:8px;fill:#000000">0</tspan></text>
+
 
 
 
@@ -1126,6 +1143,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -1137,6 +1155,7 @@
      x="204.64915"
      y="363.45386"
      style="font-size:8px;fill:#000000">2</tspan></text>
+
 
 
 
@@ -1174,6 +1193,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -1193,6 +1213,7 @@
 
 
 
+
 <text
    xml:space="preserve"
    style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none"
@@ -1204,6 +1225,7 @@
      y="324.72324"
      style="font-size:8px;fill:#000000"
      id="tspan1728-0">toggle</tspan></text>
+
 
 
 

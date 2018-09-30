@@ -1,11 +1,10 @@
+![All](./doc/all.png)
+
 # noobhour modules
 A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack):
 
 - **Baseliner**, a 4x probabilistic attenuverting switch. 
-- **CustomScale**, a quantizer for custom, CV-modifiable scales.
-
-![All](./doc/all.png)
-
+- **Customscaler**, a quantizer for custom, CV-modifiable scales.
 
 ## Baseliner
 A 4x probabilistic attenuverting switch. 
@@ -91,12 +90,12 @@ sequencer.
 
 [![Baseliner demo](http://img.youtube.com/vi/1B4TPm0vFOA/0.jpg)](http://www.youtube.com/watch?v=1B4TPm0vFOA)
 
-## CustomScale
+## Customscaler
 A quantizer for custom, CV-modifiable scales.
 
-![CustomScale](./doc/CustomScale.png)
+![Customscaler](./doc/Customscaler.png)
 
-**CustomScale** turns a continuous input signal into V/Oct output, scaling
+**Customscaler** turns a continuous input signal into V/Oct output, scaling
 the input value over the tones selected in the matrix. By default, it
 expects a 0V..10V input, but the context menu allows to switch to
 -5V..5V inputs. The input is distributed evenly over the activated
@@ -127,7 +126,7 @@ one modifies the scale matrix.
 - **v/oct** receives a frequency. If the tone has a corresponding light
   on the matrix, it will be toggled when **toggle** receives a
   trigger. This means you can control the matrix from e.g. a keyboard
-  or a sequencer (or another **CustomScale**, gasp). The **base** offset is
+  or a sequencer (or another **Customscaler**, gasp). The **base** offset is
   not taken into consideration.
 - **random** randomizes which tones are selected in the matrix,
   according to **p** and **latch/toggle**, see below. 
@@ -142,7 +141,7 @@ one modifies the scale matrix.
   If no tone is active when **random** receives a trigger, all tones
   become candidates, such that a truly random selection across all
   tones occurs, similar to the behaviour of the *randomize* trigger in
-  an earlier version of **CustomScale**.
+  an earlier version of **Customscaler**.
   
 - **p** and **latch/toggle** determine the behaviour when **random** is triggered.
 
@@ -166,11 +165,11 @@ one modifies the scale matrix.
 
 ### Videos
 
-Check out the video below, which shows several instances of **CustomScale** in action.
-[![CustomScale demo](http://img.youtube.com/vi/rC2DJ2JbXHE/0.jpg)](http://www.youtube.com/watch?v=rC2DJ2JbXHE)
+Check out the video below, which shows several instances of **Customscaler** in action.
+[![Customscaler demo](http://img.youtube.com/vi/rC2DJ2JbXHE/0.jpg)](http://www.youtube.com/watch?v=rC2DJ2JbXHE)
 
-The video below shows some less conventional uses of **CustomScale**
-[![CustomScale demo](http://img.youtube.com/vi/ja4_e43hRFA/0.jpg)](http://www.youtube.com/watch?v=ja4_e43hRFA)
+The video below shows some less conventional uses of **Customscaler**
+[![Customscaler demo](http://img.youtube.com/vi/ja4_e43hRFA/0.jpg)](http://www.youtube.com/watch?v=ja4_e43hRFA)
 
 
 ## Acknowledgements 
