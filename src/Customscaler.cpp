@@ -254,6 +254,8 @@ struct Customscaler : Module {
 	}
 	json_object_set_new(rootJ, "candidates", candidatesJ);
 	
+	json_t *bipolarInputJ = json_boolean(bipolarInput);
+	json_object_set_new(rootJ, "bipolarInput", bipolarInputJ);
 	
 	return rootJ;
   }
@@ -276,6 +278,10 @@ struct Customscaler : Module {
 		  candidate[i] = json_boolean_value(candidateJ);
 	  }
 	}
+
+	json_t *bipolarInputJ = json_object_get(rootJ, "bipolarInput");
+	bipolarInput = json_boolean_value(bipolarInputJ);
+	  
 	
 	activeTonesDirty = true;
   }
