@@ -5,7 +5,6 @@
 
 // TODO LATER
 // scale file loader - Latif Fital
-// bsl1r
 // CustomScale Pro
 // - paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
 // - quad
@@ -17,6 +16,7 @@
 // bus
 
 // DONE
+// bsl1r
 // context menu switch between 0-10 and -5..5 - (was attenuator - Pyer Cllrd)
 // Normalizing the gate input to all following inputs (with nothing plugged in them) would be amazing (instead of 4 copies of the same cable) Patrick McIlveen
 // Normalized HIGH and LOW inputs as well
