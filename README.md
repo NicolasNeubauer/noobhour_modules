@@ -4,6 +4,7 @@
 A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack):
 
 - **Baseliner**, a 4x probabilistic attenuverting switch. 
+- **Bsl1r**, a single-channel **Baseliner**
 - **Customscaler**, a quantizer for custom, CV-modifiable scales.
 
 ## Baseliner
@@ -89,6 +90,12 @@ as a rhythm generator, mixer, distorter, melody creator, and drum
 sequencer.
 
 [![Baseliner demo](http://img.youtube.com/vi/1B4TPm0vFOA/0.jpg)](http://www.youtube.com/watch?v=1B4TPm0vFOA)
+
+## Bsl1r
+A single-channel **Baseliner**.
+
+![Bsl1r](./doc/Bsl1r.png)
+
 
 ## Customscaler
 A quantizer for custom, CV-modifiable scales.
