@@ -184,4 +184,4 @@ The video below shows some less conventional uses of **Customscaler**
 Thanks to Andrew Belt for creating VCV Rack and the surrounding
 communities. Thanks to Jean-Sebastien Monzani, Dave Phillips, Mateusz
 Jedrzejewski, Existentia Virae, Alfredo Santamaria, Lars Bjerregaard,
-Patrick McIlveen for testing, helpful feedback and feature requests.
+Patrick McIlveen, Pyer Cllrd, Steve Baker for testing, helpful feedback and feature requests.
