@@ -3,28 +3,13 @@
 #include <vector>
 
 
-// TODO LATER
-// scale file loader - Latif Fital
-// CustomScale Pro
-// - paging? different pages, back/forth, CV for index selection (interpolate between non-empty pages, lights to indicate?)
-// - quad
-// - button back for randomization
 
-// TODO
-
-// IN PROGRESS
-// bus
-
-// DONE
-// bsl1r
-// context menu switch between 0-10 and -5..5 - (was attenuator - Pyer Cllrd)
-// Normalizing the gate input to all following inputs (with nothing plugged in them) would be amazing (instead of 4 copies of the same cable) Patrick McIlveen
-// Normalized HIGH and LOW inputs as well
-// Normalizing all of the outputs to the last one (a la AS 4ch baby mixer and Audible) Patrick McIlveen
-// Performance imporvement CustomScale
-// random subset (randomize activity of individual tones) - Pyer Cllrd
-// ended up with lines on I, IV, V, was: change rings around lights for black/white distinction - steve baker 
-
+struct LighterGrayModuleLightWidget : ModuleLightWidget {
+  LighterGrayModuleLightWidget() {
+	bgColor = nvgRGB(0x5a, 0x5a, 0x5a); // STEVE change this to e.g. 0x9a to make a lighter gray
+	borderColor = nvgRGBA(0, 0, 0, 0x60);
+  }
+};
 
 
 
@@ -36,6 +21,9 @@ struct GreenBlueYellowLight : GrayModuleLightWidget {
   }
 };
 
+
+
+
 template <typename BASE>
 struct ToneLight : BASE {
   ToneLight() {
@@ -43,7 +31,7 @@ struct ToneLight : BASE {
   }
 };
 
-/*
+
 struct LEDBezelGray : SVGSwitch, MomentarySwitch {
 	LEDBezelGray() {
 	  addFrame(SVG::load(assetPlugin(plugin, "res/LEDBezelGray.svg")));
@@ -56,12 +44,9 @@ struct LEDBezelDark : SVGSwitch, MomentarySwitch {
 	}
 };
 
-struct LighterGrayModuleLightWidget : ModuleLightWidget {
-	LighterGrayModuleLightWidget() {
-		bgColor = nvgRGB(0x9a, 0x9a, 0x9a);
-		borderColor = nvgRGBA(0, 0, 0, 0x60);
-	}
-};
+
+
+
 
 struct LighterGreenBlueYellowLight : LighterGrayModuleLightWidget {
   LighterGreenBlueYellowLight() {
@@ -71,7 +56,7 @@ struct LighterGreenBlueYellowLight : LighterGrayModuleLightWidget {
   }
 };
 
-*/
+
 
 
 struct Customscaler : Module {
@@ -503,19 +488,20 @@ struct CustomscalerWidget : ModuleWidget {
 		float y = -5 + 28 * (12 - tone);
 		int index = octave * 12 + tone;
 
+		/*
 		addParam(ParamWidget::create<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
 		addChild(ModuleLightWidget::create<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));
+		*/
 
-		/*
 		if (whiteKey[tone]) {
 		  addParam(ParamWidget::create<LEDBezelGray>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
-		  addChild(ModuleLightWidget::create<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));
+		  addChild(ModuleLightWidget::create<ToneLight<LighterGreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));
 		  
 		} else {
 		  addParam(ParamWidget::create<LEDBezelDark>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
 		  addChild(ModuleLightWidget::create<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));		  
 		}
-		*/
+
 	  }
 	}
   };
