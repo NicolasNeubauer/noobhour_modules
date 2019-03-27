@@ -458,7 +458,7 @@ struct CustomscalerWidget : ModuleWidget {
   
   CustomscalerWidget(Customscaler *module) : ModuleWidget(module) {
 	
-	setPanel(SVG::load(assetPlugin(plugin, "res/Customscaler.svg")));
+	setPanel(SVG::load(assetPlugin(plugin, "res/CustomScaler.svg")));
 
 	addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
 	addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
