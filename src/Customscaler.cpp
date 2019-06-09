@@ -541,4 +541,4 @@ struct CustomscalerWidget : ModuleWidget {
 };
 
 
-Model *modelCustomscaler = Model::create<Customscaler, CustomscalerWidget>("noobhour", "customscale", "Customscaler", QUANTIZER_TAG, RANDOM_TAG);
+Model *modelCustomscaler = Model::create<Customscaler, CustomscalerWidget>("customscale");

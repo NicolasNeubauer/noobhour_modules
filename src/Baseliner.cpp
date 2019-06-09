@@ -106,6 +106,7 @@ void Baseliner<NUM_COLUMNS>::step() {
   for (int i = 0; i < NUM_COLUMNS; i++) {
 	float gate = 0.0;
 
+	// TODO: REMOVE daisy-chaining inputs
 	// If gate isn't active, use an earlier, active gate's input (daisy-chaining)
 	for (int j = i; j >= 0; j--) {
 	  if (inputs[GATE1_INPUT + j].active) {
@@ -166,6 +167,7 @@ void Baseliner<NUM_COLUMNS>::step() {
 	float absVal = 0.0f;
 	if (useSignal) {
 	  // daisy-chain inputs
+	  // TODO: REMOVE daisy-chaining inputs	  
 	  for (int j = i; j >= 0; j--) {
 		if (inputs[SIGNAL1_INPUT + j].active) {
 		  input = inputs[SIGNAL1_INPUT + j].value;
@@ -178,6 +180,7 @@ void Baseliner<NUM_COLUMNS>::step() {
 	  lights[BASE1_LIGHT_POS + 2*i].value = 0.0;
 	} else {
 	  // daisy-chain inputs
+	  // TODO: REMOVE daisy-chaining inputs	  
 	  for (int j = i; j >= 0; j--) {
 		if (inputs[BASE1_INPUT + j].active) {
 		  input = inputs[BASE1_INPUT + j].value;
@@ -272,5 +275,5 @@ struct BaselinerWidget : ModuleWidget {
 };
 
 
-Model *modelBaseliner = Model::create<Baseliner<4>, BaselinerWidget<4>>("noobhour", "baseliner", "Baseliner", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG, QUAD_TAG);
-Model *modelBsl1r = Model::create<Baseliner<1>, BaselinerWidget<1>>("noobhour", "bsl1r", "Bsl1r", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG);
+Model *modelBaseliner = Model::create<Baseliner<4>, BaselinerWidget<4>>("baseliner");
+Model *modelBsl1r = Model::create<Baseliner<1>, BaselinerWidget<1>>("bsl1r");
