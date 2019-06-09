@@ -1,11 +1,11 @@
 #include "Noobhour.hpp"
 
 
-Plugin *plugin;
+Plugin *pluginInstance;
 
 
 void init(Plugin *p) {
-	plugin = p;
+	pluginInstance = p;
 
 	p->addModel(modelBaseliner);
 	p->addModel(modelBsl1r);	

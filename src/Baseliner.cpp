@@ -93,7 +93,8 @@ struct Baseliner : Module {
   SchmittTrigger gateTriggers[NUM_COLUMNS];
   bool isActive[NUM_COLUMNS];
 
-  Baseliner() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  Baseliner() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
   
   void step() override;
 
@@ -216,15 +217,16 @@ void Baseliner<NUM_COLUMNS>::step() {
 
 template <int NUM_COLUMNS>
 struct BaselinerWidget : ModuleWidget {
-  BaselinerWidget(Baseliner<NUM_COLUMNS> *module) : ModuleWidget(module) {
+  BaselinerWidget(Baseliner<NUM_COLUMNS> *module) {
+		setModule(module);
 	std::string filename = (NUM_COLUMNS == 1 ? "res/Bsl1r.svg" : "res/Baseliner.svg");
-	setPanel(SVG::load(assetPlugin(plugin, filename)));
+	setPanel(SVG::load(assetPlugin(pluginInstance, filename)));
 
 	if (NUM_COLUMNS > 1) {
-	  addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
-	  addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
-	  addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 0)));
-	  addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 365)));
+	  addChild(createWidget<ScrewSilver>(Vec(15, 0)));
+	  addChild(createWidget<ScrewSilver>(Vec(15, 365)));
+	  addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 0)));
+	  addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 	}
 
 	float wKnob = 30.23437f;
@@ -252,28 +254,28 @@ struct BaselinerWidget : ModuleWidget {
 	float fixOffset = 5.0f;
 
 	for (int i=0; i<NUM_COLUMNS; i++) {
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));	  	  
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f));	  
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), Port::INPUT, module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));	  	  
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f));	  
+	  addInput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), PortWidget::INPUT, module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
 
-	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 2.78f), module, Baseliner<NUM_COLUMNS>::SIGNAL1_LIGHT_POS + 2*i));	  
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 3), Port::INPUT, module, Baseliner<NUM_COLUMNS>::GATE1_INPUT + i));
-	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner<NUM_COLUMNS>::BASE1_LIGHT_POS + 2*i));
+	  addChild(createLight<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 2.78f), module, Baseliner<NUM_COLUMNS>::SIGNAL1_LIGHT_POS + 2*i));	  
+	  addInput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 3), PortWidget::INPUT, module, Baseliner<NUM_COLUMNS>::GATE1_INPUT + i));
+	  addChild(createLight<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner<NUM_COLUMNS>::BASE1_LIGHT_POS + 2*i));
 
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), Port::INPUT, module, Baseliner<NUM_COLUMNS>::BASE1_INPUT + i));		
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f));
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f));
+	  addInput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), PortWidget::INPUT, module, Baseliner<NUM_COLUMNS>::BASE1_INPUT + i));		
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f));
 	  
-	  addOutput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), Port::OUTPUT, module, Baseliner<NUM_COLUMNS>::OUT1_OUTPUT + i));
+	  addOutput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), PortWidget::OUTPUT, module, Baseliner<NUM_COLUMNS>::OUT1_OUTPUT + i));
 	  
-	  addParam(ParamWidget::create<CKSSThree>(Vec(xOffset + float(i)*xGrid + offsetSwitch, yOffset + yGrid * 8 + probOffset), module, Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f));
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 9 + probOffset), module, Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f));
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 10 + probOffset - attenuatorOffset), Port::INPUT, module, Baseliner<NUM_COLUMNS>::P1_INPUT + i));
+	  addParam(createParam<CKSSThree>(Vec(xOffset + float(i)*xGrid + offsetSwitch, yOffset + yGrid * 8 + probOffset), module, Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 9 + probOffset), module, Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f));
+	  addInput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 10 + probOffset - attenuatorOffset), PortWidget::INPUT, module, Baseliner<NUM_COLUMNS>::P1_INPUT + i));
 	}
   }
 
 };
 
 
-Model *modelBaseliner = Model::create<Baseliner<4>, BaselinerWidget<4>>("baseliner");
-Model *modelBsl1r = Model::create<Baseliner<1>, BaselinerWidget<1>>("bsl1r");
+Model *modelBaseliner = createModel<Baseliner<4>, BaselinerWidget<4>>("baseliner");
+Model *modelBsl1r = createModel<Baseliner<1>, BaselinerWidget<1>>("bsl1r");
