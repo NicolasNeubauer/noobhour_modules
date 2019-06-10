@@ -19,3 +19,11 @@ DISTRIBUTABLES += $(wildcard LICENSE*) res
 
 # Include the VCV Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
+
+local:
+	$(MAKE)
+	$(MAKE) dist
+	cp -r dist/noobhour $(RACK_DIR)/plugins
+	cd $(RACK_DIR) && $(MAKE) run
+
+.PHONY: local
