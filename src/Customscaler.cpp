@@ -1,4 +1,5 @@
 #include "Noobhour.hpp"
+#include "logger.hpp"
 #include <vector>
 
 
@@ -457,7 +458,7 @@ struct CustomscalerWidget : ModuleWidget {
   const bool whiteKey[12] = {true, false, true, false, true, true, false, true, false, true, false, true};
   
   CustomscalerWidget(Customscaler *module) {
-		setModule(module);
+	setModule(module);
 	
 	setPanel(SVG::load(assetPlugin(pluginInstance, "res/CustomScaler.svg")));
 
@@ -477,23 +478,26 @@ struct CustomscalerWidget : ModuleWidget {
 	addOutput(createPort<PJ301MPort>(Vec(x, yStart + 2 * yRange + 2 * ySeparator), PortWidget::OUTPUT, module, Customscaler::OUT_OUTPUT));
 	addOutput(createPort<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 2 * ySeparator), PortWidget::OUTPUT, module, Customscaler::CHANGEGATE_OUTPUT));	
 
-
+	
 	// lower panel
 	
 	addInput(createPort<PJ301MPort>(Vec(x, lastY - (3 * yRange + 2 * ySeparator)), PortWidget::INPUT, module, Customscaler::TONE_INPUT));
 	addInput(createPort<PJ301MPort>(Vec(x2, lastY - (3 * yRange + 2 * ySeparator)), PortWidget::INPUT, module, Customscaler::TOGGLE_TRIGGER_INPUT)); 
-	
+
 	// addInput(createPort<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::RANDOM_SUBSET_TRIGGER_INPUT));	
 	// addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY - (3 * yRange + 1 * ySeparator - offsetTL1005)), module, Customscaler::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
 
 	addParam(createParam<RoundBlackKnob>(Vec(x2 + offsetKnob, lastY - (2 * yRange + 1 * ySeparator - offsetKnob)), module, Customscaler::P_PARAM, 0.f, 1.f, 0.5f));
 	addInput(createPort<PJ301MPort>(Vec(x, lastY - (2 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::P_INPUT));
-	
+
+	// INFO(" x %f, lastY %f, test %d", x, lastY - (1 * yRange + 1 * ySeparator), 2);	
 	addInput(createPort<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::RANDOMIZE_TRIGGER_INPUT));	
 	addParam(createParam<CKSS>(Vec(x2 + offsetSwitch, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::MODE_PARAM, 0.f, 1.f, 1.f));
 
-	addInput(createPort<PJ301MPort>(Vec(x, lastY), PortWidget::INPUT, module, Customscaler::RESET_TRIGGER_INPUT));
-	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
+	// INFO(" x %f, lastY %f, test %d", x, lastY, 3);
+	
+	addInput(createPort<PJ301MPort>(Vec(x, lastY), PortWidget::INPUT, module, Customscaler::RESET_TRIGGER_INPUT)); // breaks
+	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f)); // breaks
 	
 	// generate lights
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
@@ -503,23 +507,14 @@ struct CustomscalerWidget : ModuleWidget {
 	  for (int tone=0; tone<12; tone++) {
 		float y = -5 + 28 * (12 - tone);
 		int index = octave * 12 + tone;
+		// INFO("x %f y %f", x, y);
 
-		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
-		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));
-
-		/*
-		if (whiteKey[tone]) {
-		  addParam(createParam<LEDBezelGray>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
-		  addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));
-		  
-		} else {
-		  addParam(createParam<LEDBezelDark>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f));
-		  addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3));		  
-		}
-		*/
+		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f)); // breaks
+		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3)); // breaks
 	  }
 	}
   };
+
 
   /*
   void appendContextMenu(Menu *menu) override {

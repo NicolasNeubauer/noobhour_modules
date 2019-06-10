@@ -217,7 +217,8 @@ void Baseliner<NUM_COLUMNS>::step() {
 template <int NUM_COLUMNS>
 struct BaselinerWidget : ModuleWidget {
   BaselinerWidget(Baseliner<NUM_COLUMNS> *module) {
-		setModule(module);
+
+	setModule(module);
 	std::string filename = (NUM_COLUMNS == 1 ? "res/Bsl1r.svg" : "res/Baseliner.svg");
 	setPanel(SVG::load(assetPlugin(pluginInstance, filename)));
 
@@ -252,8 +253,9 @@ struct BaselinerWidget : ModuleWidget {
 	float attenuatorOffset = 5.0f; // move attenuator and corresponding inputs closer to each other
 	float fixOffset = 5.0f;
 
+	// breaks after this
 	for (int i=0; i<NUM_COLUMNS; i++) {
-	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));	  	  
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f));	  
 	  addInput(createPort<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), PortWidget::INPUT, module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
 
