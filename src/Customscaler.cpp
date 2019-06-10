@@ -521,6 +521,7 @@ struct CustomscalerWidget : ModuleWidget {
 	}
   };
 
+  /*
   void appendContextMenu(Menu *menu) override {
 	Customscaler *customscaler = dynamic_cast<Customscaler*>(module);
 	assert(customscaler);
@@ -539,6 +540,7 @@ struct CustomscalerWidget : ModuleWidget {
 	menu->addChild(construct<MenuLabel>());
 	menu->addChild(construct<UniBiItem>(&MenuItem::text, "Signal input", &UniBiItem::customscaler, customscaler));
   };
+  */
 };
 
 
