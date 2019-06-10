@@ -1,5 +1,4 @@
 #include "Noobhour.hpp"
-#include "dsp/digital.hpp"
 
 template <int NUM_COLUMNS>
 struct Baseliner : Module {
