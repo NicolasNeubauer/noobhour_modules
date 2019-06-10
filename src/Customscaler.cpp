@@ -30,9 +30,9 @@
 
 struct GreenBlueYellowLight : GrayModuleLightWidget {
   GreenBlueYellowLight() {
-	addBaseColor(COLOR_GREEN);
-	addBaseColor(COLOR_BLUE);
-	addBaseColor(COLOR_YELLOW);		
+	//addBaseColor(COLOR_GREEN);
+	//addBaseColor(COLOR_BLUE);
+	//addBaseColor(COLOR_YELLOW);		
   }
 };
 
@@ -46,13 +46,13 @@ struct ToneLight : BASE {
 /*
 struct LEDBezelGray : SVGSwitch, MomentarySwitch {
 	LEDBezelGray() {
-	  addFrame(SVG::load(assetPlugin(pluginInstance, "res/LEDBezelGray.svg")));
+	  addFrame(SVG::load(asset::plugin(pluginInstance, "res/LEDBezelGray.svg")));
 	}
 };
 
 struct LEDBezelDark : SVGSwitch, MomentarySwitch {
 	LEDBezelDark() {
-	  addFrame(SVG::load(assetPlugin(pluginInstance, "res/LEDBezelDark.svg")));
+	  addFrame(SVG::load(asset::plugin(pluginInstance, "res/LEDBezelDark.svg")));
 	}
 };
 
@@ -117,13 +117,13 @@ struct Customscaler : Module {
 	NUM_LIGHTS
   };
 
-  SchmittTrigger gateTrigger;
-  SchmittTrigger randomizeTrigger;
-  SchmittTrigger resetTrigger;
-  SchmittTrigger resetButtonTrigger;
-  SchmittTrigger paramTrigger[NUM_TONES];
+  dsp::SchmittTrigger gateTrigger;
+  dsp::SchmittTrigger randomizeTrigger;
+  dsp::SchmittTrigger resetTrigger;
+  dsp::SchmittTrigger resetButtonTrigger;
+  dsp::SchmittTrigger paramTrigger[NUM_TONES];
   
-  PulseGenerator changePulse;
+  dsp::PulseGenerator changePulse;
   
   bool state[NUM_TONES];
   bool candidate[NUM_TONES];
@@ -143,7 +143,7 @@ struct Customscaler : Module {
 	onReset();	
   }
   
-  void step() override;
+  void process(const ProcessArgs &args) override;
 
   float getVOct(int toneIndex) const {
 	int octave = toneIndex / 12;
@@ -165,9 +165,9 @@ struct Customscaler : Module {
 
   float getP() {
 	float p_input = 0;
-	if (inputs[P_INPUT].active)
-	  p_input = clamp(inputs[P_INPUT].value / 10.f, -10.f, 10.f);
-	return clamp(p_input + params[P_PARAM].value, 0.0f, 1.0f);
+	if (inputs[P_INPUT].isConnected())
+	  p_input = clamp(inputs[P_INPUT].getVoltage() / 10.f, -10.f, 10.f);
+	return clamp(p_input + params[P_PARAM].getValue(), 0.0f, 1.0f);
   }
   
   void onRandomize() override {
@@ -176,7 +176,7 @@ struct Customscaler : Module {
 
   void randomizeTones(float p) {
 	for (int i = 0; i < NUM_TONES; i++) {
-	  state[i] = (randomUniform() < p);
+	  state[i] = (random::uniform() < p);
 	  candidate[i] = false;
 	}
 	activeTonesDirty = true;
@@ -185,13 +185,13 @@ struct Customscaler : Module {
   void randomSubset(float p) {
 	int activeTones = 0;
 	int candidates = 0;
-	bool toggle = params[MODE_PARAM].value < 0.5f;
+	bool toggle = params[MODE_PARAM].getValue() < 0.5f;
 	for (int i = 0; i < NUM_TONES; i++) {
 	  if (state[i] || candidate[i]) {
 		candidates++;
 
 		if (toggle) {
-		  if (randomUniform() < p) {
+		  if (random::uniform() < p) {
 			state[i] ^= true;
 		  }
 		  if (state[i]) {
@@ -201,7 +201,7 @@ struct Customscaler : Module {
 			candidate[i] = true;
 		  }
 		} else {		
-		  if (randomUniform() < p) {
+		  if (random::uniform() < p) {
 			activeTones++;
 			state[i] = true;
 			candidate[i] = false;
@@ -292,39 +292,39 @@ struct Customscaler : Module {
 
 
 
-void Customscaler::step() {
+void Customscaler::process(const ProcessArgs &args) {
   // RESET
-  if (inputs[RESET_TRIGGER_INPUT].active) {
-	if (resetTrigger.process(rescale(inputs[RESET_TRIGGER_INPUT].value, 0.1f, 2.f, 0.f, 1.f))) {
+  if (inputs[RESET_TRIGGER_INPUT].isConnected()) {
+	if (resetTrigger.process(rescale(inputs[RESET_TRIGGER_INPUT].getVoltage(), 0.1f, 2.f, 0.f, 1.f))) {
 	  onReset();
 	}	
   }
 
-  if (resetButtonTrigger.process(params[RESET_BUTTON_PARAM].value)) {
+  if (resetButtonTrigger.process(params[RESET_BUTTON_PARAM].getValue())) {
 	onReset();
   }
   
 
   // RANDOMIZE
-  if (inputs[RANDOMIZE_TRIGGER_INPUT].active) {
-	if (randomizeTrigger.process(rescale(inputs[RANDOMIZE_TRIGGER_INPUT].value, 0.1f, 2.f, 0.f, 1.f))) {
+  if (inputs[RANDOMIZE_TRIGGER_INPUT].isConnected()) {
+	if (randomizeTrigger.process(rescale(inputs[RANDOMIZE_TRIGGER_INPUT].getVoltage(), 0.1f, 2.f, 0.f, 1.f))) {
 	  randomSubset(getP());
 	}		
   }
 
   /*
-  if (randomizeButtonTrigger.process(params[RANDOMIZE_BUTTON_PARAM].value)) {
+  if (randomizeButtonTrigger.process(params[RANDOMIZE_BUTTON_PARAM].getValue())) {
 	randomizeTones(getP());
   }
   */
 
   // TOGGLE
-  if (inputs[TONE_INPUT].active) {
+  if (inputs[TONE_INPUT].isConnected()) {
 	float gate = 0.0;
-	if (inputs[TOGGLE_TRIGGER_INPUT].active)
-	  gate = inputs[TOGGLE_TRIGGER_INPUT].value;
+	if (inputs[TOGGLE_TRIGGER_INPUT].isConnected())
+	  gate = inputs[TOGGLE_TRIGGER_INPUT].getVoltage();
 	if (gateTrigger.process(rescale(gate, 0.1f, 2.f, 0.f, 1.f))) {
-	  int toneIndex = getTone(inputs[TONE_INPUT].value);
+	  int toneIndex = getTone(inputs[TONE_INPUT].getVoltage());
 	  if (toneIndex >= 0 && toneIndex < NUM_TONES) {
 		state[toneIndex] ^= true;
 		candidate[toneIndex] = false;
@@ -336,10 +336,10 @@ void Customscaler::step() {
   // OCTAVE RANGE
   int startTone = 0;
   int endTone = 0;
-  if (params[RANGE_PARAM].value < 0.5f) {
+  if (params[RANGE_PARAM].getValue() < 0.5f) {
 	startTone = 0;
 	endTone = NUM_TONES - 1;
-  } else if (params[RANGE_PARAM].value < 1.5f) {
+  } else if (params[RANGE_PARAM].getValue() < 1.5f) {
 	startTone = 12;
 	endTone = NUM_TONES - 13;
   } else {
@@ -353,7 +353,7 @@ void Customscaler::step() {
 
   // CHECK TONE TOGGLES
   for (int i = 0; i < NUM_TONES; i++) {
-	if (paramTrigger[i].process(params[i].value)) {
+	if (paramTrigger[i].process(params[i].getValue())) {
 	  state[i] ^= true;
 	  candidate[i] = false;
 	  activeTonesDirty = true;
@@ -371,9 +371,9 @@ void Customscaler::step() {
   }
 
   // FETCH BASE TONE
-  float baseTone = params[BASE_PARAM].value;
-  if (inputs[BASE_INPUT].active) {
-	baseTone +=  inputs[BASE_INPUT].value / 10.f * 11.f;
+  float baseTone = params[BASE_PARAM].getValue();
+  if (inputs[BASE_INPUT].isConnected()) {
+	baseTone +=  inputs[BASE_INPUT].getVoltage() / 10.f * 11.f;
   }
   int baseToneDiscrete = static_cast<int>(clamp(baseTone, 0.f, 11.f));
 
@@ -381,8 +381,8 @@ void Customscaler::step() {
   float output = 0;
   int selectedTone = NUM_TONES;
   int finalTone = NUM_TONES;
-  if (inputs[SIGNAL_INPUT].active && activeTones.size() > 0) {
-	float inp = inputs[SIGNAL_INPUT].value;
+  if (inputs[SIGNAL_INPUT].isConnected() && activeTones.size() > 0) {
+	float inp = inputs[SIGNAL_INPUT].getVoltage();
 	if (bipolarInput)
 	  inp += 5.f;
 	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inp, 0.f, 10.f)) / 10.f);
@@ -433,8 +433,8 @@ void Customscaler::step() {
   lastSelectedTone = selectedTone; 
   
   // OUTPUT
-  outputs[OUT_OUTPUT].value = output;
-  outputs[CHANGEGATE_OUTPUT].value = (changePulse.process(1.0f / engineGetSampleRate()) ? 10.0f : 0.0f);
+  outputs[OUT_OUTPUT].setVoltage(output);
+  outputs[CHANGEGATE_OUTPUT].setVoltage((changePulse.process(1.0f / args.sampleRate) ? 10.0f : 0.0f));
 
 }
 
@@ -460,44 +460,54 @@ struct CustomscalerWidget : ModuleWidget {
   CustomscalerWidget(Customscaler *module) {
 	setModule(module);
 	
-	setPanel(SVG::load(assetPlugin(pluginInstance, "res/CustomScaler.svg")));
+	setPanel(SVG::load(asset::plugin(pluginInstance, "res/CustomScaler.svg")));
 
 	addChild(createWidget<ScrewSilver>(Vec(15, 0)));
 	addChild(createWidget<ScrewSilver>(Vec(15, 365)));
 	addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 0)));
 	addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 
+
+
+	
 	// upper panel
 
-	addInput(createPort<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), PortWidget::INPUT, module, Customscaler::SIGNAL_INPUT));
-	addParam(createParam<CKSSThree>(Vec(x2 + offsetSwitch, yStart + 0 * yRange + 0 * ySeparator), module, Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f));
+	addInput(createInput<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), module, Customscaler::SIGNAL_INPUT));
+	configParam(Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f, "");	
+	addParam(createParam<CKSSThree>(Vec(x2 + offsetSwitch, yStart + 0 * yRange + 0 * ySeparator), module, Customscaler::RANGE_PARAM));
 	
-	addInput(createPort<PJ301MPort>(Vec(x, yStart + 1 * yRange + 1 * ySeparator), PortWidget::INPUT, module, Customscaler::BASE_INPUT));
-	addParam(createParam<RoundBlackSnapKnob>(Vec(x2 + offsetKnob, yStart + 1 * yRange + 1 * ySeparator + offsetKnob), module, Customscaler::BASE_PARAM, 0.f, 11.f, 0.f));		
+	addInput(createInput<PJ301MPort>(Vec(x, yStart + 1 * yRange + 1 * ySeparator), module, Customscaler::BASE_INPUT));
+	configParam(Customscaler::BASE_PARAM, 0.f, 11.f, 0.f, "");	
+	addParam(createParam<RoundBlackSnapKnob>(Vec(x2 + offsetKnob, yStart + 1 * yRange + 1 * ySeparator + offsetKnob), module, Customscaler::BASE_PARAM));		
 	
-	addOutput(createPort<PJ301MPort>(Vec(x, yStart + 2 * yRange + 2 * ySeparator), PortWidget::OUTPUT, module, Customscaler::OUT_OUTPUT));
-	addOutput(createPort<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 2 * ySeparator), PortWidget::OUTPUT, module, Customscaler::CHANGEGATE_OUTPUT));	
+	addOutput(createOutput<PJ301MPort>(Vec(x, yStart + 2 * yRange + 2 * ySeparator), module, Customscaler::OUT_OUTPUT));
+	addOutput(createOutput<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 2 * ySeparator), module, Customscaler::CHANGEGATE_OUTPUT));	
 
 	
 	// lower panel
 	
-	addInput(createPort<PJ301MPort>(Vec(x, lastY - (3 * yRange + 2 * ySeparator)), PortWidget::INPUT, module, Customscaler::TONE_INPUT));
-	addInput(createPort<PJ301MPort>(Vec(x2, lastY - (3 * yRange + 2 * ySeparator)), PortWidget::INPUT, module, Customscaler::TOGGLE_TRIGGER_INPUT)); 
+	addInput(createInput<PJ301MPort>(Vec(x, lastY - (3 * yRange + 2 * ySeparator)), module, Customscaler::TONE_INPUT));
+	addInput(createInput<PJ301MPort>(Vec(x2, lastY - (3 * yRange + 2 * ySeparator)), module, Customscaler::TOGGLE_TRIGGER_INPUT)); 
 
-	// addInput(createPort<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::RANDOM_SUBSET_TRIGGER_INPUT));	
-	// addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY - (3 * yRange + 1 * ySeparator - offsetTL1005)), module, Customscaler::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f));
+	// addInput(createInput<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::RANDOM_SUBSET_TRIGGER_INPUT));
+	// configParam(Customscaler::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");
+	// addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY - (3 * yRange + 1 * ySeparator - offsetTL1005)), module, Customscaler::RANDOMIZE_BUTTON_PARAM));
 
-	addParam(createParam<RoundBlackKnob>(Vec(x2 + offsetKnob, lastY - (2 * yRange + 1 * ySeparator - offsetKnob)), module, Customscaler::P_PARAM, 0.f, 1.f, 0.5f));
-	addInput(createPort<PJ301MPort>(Vec(x, lastY - (2 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::P_INPUT));
+
+	configParam(Customscaler::P_PARAM, 0.f, 1.f, 0.5f, "");	
+	addParam(createParam<RoundBlackKnob>(Vec(x2 + offsetKnob, lastY - (2 * yRange + 1 * ySeparator - offsetKnob)), module, Customscaler::P_PARAM));
+	addInput(createInput<PJ301MPort>(Vec(x, lastY - (2 * yRange + 1 * ySeparator)), module, Customscaler::P_INPUT));
 
 	// INFO(" x %f, lastY %f, test %d", x, lastY - (1 * yRange + 1 * ySeparator), 2);	
-	addInput(createPort<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), PortWidget::INPUT, module, Customscaler::RANDOMIZE_TRIGGER_INPUT));	
-	addParam(createParam<CKSS>(Vec(x2 + offsetSwitch, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::MODE_PARAM, 0.f, 1.f, 1.f));
+	addInput(createInput<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::RANDOMIZE_TRIGGER_INPUT));
+	configParam(Customscaler::MODE_PARAM, 0.f, 1.f, 1.f, "");	
+	addParam(createParam<CKSS>(Vec(x2 + offsetSwitch, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::MODE_PARAM));
 
 	// INFO(" x %f, lastY %f, test %d", x, lastY, 3);
 	
-	addInput(createPort<PJ301MPort>(Vec(x, lastY), PortWidget::INPUT, module, Customscaler::RESET_TRIGGER_INPUT)); // breaks
-	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f)); // breaks
+	addInput(createInput<PJ301MPort>(Vec(x, lastY), module, Customscaler::RESET_TRIGGER_INPUT)); // breaks
+	configParam(Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");	
+	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM)); // breaks
 	
 	// generate lights
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
@@ -509,7 +519,8 @@ struct CustomscalerWidget : ModuleWidget {
 		int index = octave * 12 + tone;
 		// INFO("x %f y %f", x, y);
 
-		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f)); // breaks
+		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, "");		
+		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index)); // breaks
 		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3)); // breaks
 	  }
 	}
@@ -526,7 +537,7 @@ struct CustomscalerWidget : ModuleWidget {
 	  void onAction(EventAction &e) override {
 		customscaler->bipolarInput ^= true;;
 	  }
-	  void step() override {
+	  void process(const ProcessArgs &args) override {
 		rightText = customscaler->bipolarInput ? "-5V..5V" : "0V..10V";
 		MenuItem::step();
 	  }
