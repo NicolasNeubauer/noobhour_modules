@@ -1,5 +1,4 @@
 #include "Noobhour.hpp"
-#include "logger.hpp"
 #include <vector>
 
 
@@ -30,6 +29,7 @@
 
 struct GreenBlueYellowLight : GrayModuleLightWidget {
   GreenBlueYellowLight() {
+	// TODO fix this
 	//addBaseColor(COLOR_GREEN);
 	//addBaseColor(COLOR_BLUE);
 	//addBaseColor(COLOR_YELLOW);		
@@ -138,8 +138,19 @@ struct Customscaler : Module {
 
 
   Customscaler() {
-		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+	config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	activeTones.reserve(NUM_TONES);
+	configParam(Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f, "");		
+	configParam(Customscaler::BASE_PARAM, 0.f, 11.f, 0.f, "");	
+	configParam(Customscaler::P_PARAM, 0.f, 1.f, 0.5f, "");		
+	configParam(Customscaler::MODE_PARAM, 0.f, 1.f, 1.f, "");	
+	configParam(Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");	
+	for (int octave=0; octave<Customscaler::NUM_OCTAVES; octave++) {
+	  for (int tone=0; tone<12; tone++) {
+		int index = octave * 12 + tone;
+		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, "");
+	  }
+	}
 	onReset();	
   }
   
@@ -467,22 +478,16 @@ struct CustomscalerWidget : ModuleWidget {
 	addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 0)));
 	addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 
-
-
-	
 	// upper panel
 
 	addInput(createInput<PJ301MPort>(Vec(x, yStart + 0 * yRange + 0 * ySeparator), module, Customscaler::SIGNAL_INPUT));
-	configParam(Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f, "");	
 	addParam(createParam<CKSSThree>(Vec(x2 + offsetSwitch, yStart + 0 * yRange + 0 * ySeparator), module, Customscaler::RANGE_PARAM));
 	
 	addInput(createInput<PJ301MPort>(Vec(x, yStart + 1 * yRange + 1 * ySeparator), module, Customscaler::BASE_INPUT));
-	configParam(Customscaler::BASE_PARAM, 0.f, 11.f, 0.f, "");	
 	addParam(createParam<RoundBlackSnapKnob>(Vec(x2 + offsetKnob, yStart + 1 * yRange + 1 * ySeparator + offsetKnob), module, Customscaler::BASE_PARAM));		
 	
 	addOutput(createOutput<PJ301MPort>(Vec(x, yStart + 2 * yRange + 2 * ySeparator), module, Customscaler::OUT_OUTPUT));
 	addOutput(createOutput<PJ301MPort>(Vec(x2, yStart + 2 * yRange + 2 * ySeparator), module, Customscaler::CHANGEGATE_OUTPUT));	
-
 	
 	// lower panel
 	
@@ -493,20 +498,16 @@ struct CustomscalerWidget : ModuleWidget {
 	// configParam(Customscaler::RANDOMIZE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");
 	// addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY - (3 * yRange + 1 * ySeparator - offsetTL1005)), module, Customscaler::RANDOMIZE_BUTTON_PARAM));
 
-
-	configParam(Customscaler::P_PARAM, 0.f, 1.f, 0.5f, "");	
 	addParam(createParam<RoundBlackKnob>(Vec(x2 + offsetKnob, lastY - (2 * yRange + 1 * ySeparator - offsetKnob)), module, Customscaler::P_PARAM));
 	addInput(createInput<PJ301MPort>(Vec(x, lastY - (2 * yRange + 1 * ySeparator)), module, Customscaler::P_INPUT));
 
 	// INFO(" x %f, lastY %f, test %d", x, lastY - (1 * yRange + 1 * ySeparator), 2);	
 	addInput(createInput<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::RANDOMIZE_TRIGGER_INPUT));
-	configParam(Customscaler::MODE_PARAM, 0.f, 1.f, 1.f, "");	
 	addParam(createParam<CKSS>(Vec(x2 + offsetSwitch, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::MODE_PARAM));
 
 	// INFO(" x %f, lastY %f, test %d", x, lastY, 3);
 	
 	addInput(createInput<PJ301MPort>(Vec(x, lastY), module, Customscaler::RESET_TRIGGER_INPUT)); // breaks
-	configParam(Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");	
 	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM)); // breaks
 	
 	// generate lights
@@ -519,7 +520,6 @@ struct CustomscalerWidget : ModuleWidget {
 		int index = octave * 12 + tone;
 		// INFO("x %f y %f", x, y);
 
-		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, "");		
 		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index)); // breaks
 		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3)); // breaks
 	  }

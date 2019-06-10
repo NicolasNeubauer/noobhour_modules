@@ -93,7 +93,17 @@ struct Baseliner : Module {
   bool isActive[NUM_COLUMNS];
 
   Baseliner() {
-		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
+	config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+	for (int i = 0; i < NUM_COLUMNS; i++) {
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f, "");	  
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f, "");
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
+	  configParam(Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f, "");
+	  configParam(Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f, "");
+	}
+	
+  }
   
   void process(const ProcessArgs &args) override;
 
@@ -101,9 +111,13 @@ struct Baseliner : Module {
 
 template <int NUM_COLUMNS>
 void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
+
+	  
+  
   float outputs_cache[NUM_COLUMNS];
   
   for (int i = 0; i < NUM_COLUMNS; i++) {
+	
 	float gate = 0.0;
 
 	// TODO: REMOVE daisy-chaining inputs
@@ -256,9 +270,7 @@ struct BaselinerWidget : ModuleWidget {
 	// breaks after this
 	for (int i=0; i<NUM_COLUMNS; i++) {
 
-	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i));
-	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f, "");	  
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i));	  
 	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
 	  
@@ -267,16 +279,12 @@ struct BaselinerWidget : ModuleWidget {
 	  addChild(createLight<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner<NUM_COLUMNS>::BASE1_LIGHT_POS + 2*i));
 
 	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), module, Baseliner<NUM_COLUMNS>::BASE1_INPUT + i));
-	  configParam(Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f, "");
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::BASE1_PARAM + i));
-	  configParam(Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i));
 	  
 	  addOutput(createOutput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), module, Baseliner<NUM_COLUMNS>::OUT1_OUTPUT + i));
 
-	  configParam(Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f, "");
 	  addParam(createParam<CKSSThree>(Vec(xOffset + float(i)*xGrid + offsetSwitch, yOffset + yGrid * 8 + probOffset), module, Baseliner<NUM_COLUMNS>::MODE1_PARAM + i));
-	  configParam(Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f, "");
 	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 9 + probOffset), module, Baseliner<NUM_COLUMNS>::P1_PARAM + i));
 	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 10 + probOffset - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::P1_INPUT + i));
 	}
