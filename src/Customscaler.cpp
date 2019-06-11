@@ -29,10 +29,9 @@
 
 struct GreenBlueYellowLight : GrayModuleLightWidget {
   GreenBlueYellowLight() {
-	// TODO fix this
-	//addBaseColor(COLOR_GREEN);
-	//addBaseColor(COLOR_BLUE);
-	//addBaseColor(COLOR_YELLOW);		
+	addBaseColor(SCHEME_GREEN);
+	addBaseColor(SCHEME_BLUE);
+	addBaseColor(SCHEME_YELLOW);		
   }
 };
 
