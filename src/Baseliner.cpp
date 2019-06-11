@@ -111,16 +111,11 @@ struct Baseliner : Module {
 
 template <int NUM_COLUMNS>
 void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
-
-	  
-  
   float outputs_cache[NUM_COLUMNS];
   
   for (int i = 0; i < NUM_COLUMNS; i++) {
-	
 	float gate = 0.0;
 
-	// TODO: REMOVE daisy-chaining inputs
 	// If gate isn't active, use an earlier, active gate's input (daisy-chaining)
 	for (int j = i; j >= 0; j--) {
 	  if (inputs[GATE1_INPUT + j].isConnected()) {
@@ -180,27 +175,17 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
 	float param = 0.0f;
 	float absVal = 0.0f;
 	if (useSignal) {
-	  // daisy-chain inputs
-	  // TODO: REMOVE daisy-chaining inputs	  
-	  for (int j = i; j >= 0; j--) {
-		if (inputs[SIGNAL1_INPUT + j].isConnected()) {
-		  input = inputs[SIGNAL1_INPUT + j].getVoltage();
-		  break;
-		}
+	  if (inputs[SIGNAL1_INPUT + i].isConnected()) {
+		input = inputs[SIGNAL1_INPUT + i].getVoltage();
 	  }	  
 	  param = params[SIGNAL1_PARAM + i].getValue();
 	  absVal = params[SIGNAL1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 1.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 0.0;
 	} else {
-	  // daisy-chain inputs
-	  // TODO: REMOVE daisy-chaining inputs	  
-	  for (int j = i; j >= 0; j--) {
-		if (inputs[BASE1_INPUT + j].isConnected()) {
-		  input = inputs[BASE1_INPUT + j].getVoltage();
-		  break;
-		}
-	  }	  	  
+	  if (inputs[BASE1_INPUT + i].isConnected()) {
+		  input = inputs[BASE1_INPUT + i].getVoltage();
+	  }
 	  param = params[BASE1_PARAM + i].getValue();
 	  absVal = params[BASE1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;

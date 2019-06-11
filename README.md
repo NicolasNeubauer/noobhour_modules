@@ -63,14 +63,17 @@ knob value (0..1) and the CV input.
   
 ### Daisy-chaining
 
-All the inputs are normalized to the left and the outputs are normalized to the right:
+Gates are normalized to the left and the outputs are normalized to the right:
 
-- Any unpatched input (**Gate**, **High** or **Low**) will receive its value
+- Any unpatched **Gate**will receive its value
   from its first patched input from the left.
 - Any unpatched output will contribute its value to the right. The
   next patched output will return the average of its own value plus
-  all potential unpatched outputs to its left (until there's another
+  all potential unpatched outputs to its left (until there is another
   patched output to the left).
+- Note that in earlier versions, **High** and **Low** were also normalized
+  to the left, but this was discarded, as it complicated having a proper 
+  zero baseline. 
 
 
 ### Patching suggestions
