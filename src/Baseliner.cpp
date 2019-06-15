@@ -95,12 +95,12 @@ struct Baseliner : Module {
   Baseliner() {
 	config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	for (int i = 0; i < NUM_COLUMNS; i++) {
-	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
-	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f, "");	  
-	  configParam(Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f, "");
-	  configParam(Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f, "");
-	  configParam(Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f, "");
-	  configParam(Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f, "");
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f, "Absolute value HIGH", "V");
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f, "Attenuation HIGH", "*");	  
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f, "Aattenuation LOW", "*");
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f, "Absolute value LOW", "V");
+	  configParam(Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f, "Mode");
+	  configParam(Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f, "Probability");
 	}
 	
   }
@@ -219,7 +219,7 @@ struct BaselinerWidget : ModuleWidget {
 
 	setModule(module);
 	std::string filename = (NUM_COLUMNS == 1 ? "res/Bsl1r.svg" : "res/Baseliner.svg");
-	setPanel(SVG::load(asset::plugin(pluginInstance, filename)));
+	setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, filename)));
 
 	if (NUM_COLUMNS > 1) {
 	  addChild(createWidget<ScrewSilver>(Vec(15, 0)));

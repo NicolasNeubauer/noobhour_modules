@@ -42,37 +42,6 @@ struct ToneLight : BASE {
   }
 };
 
-/*
-struct LEDBezelGray : SVGSwitch, MomentarySwitch {
-	LEDBezelGray() {
-	  addFrame(SVG::load(asset::plugin(pluginInstance, "res/LEDBezelGray.svg")));
-	}
-};
-
-struct LEDBezelDark : SVGSwitch, MomentarySwitch {
-	LEDBezelDark() {
-	  addFrame(SVG::load(asset::plugin(pluginInstance, "res/LEDBezelDark.svg")));
-	}
-};
-
-struct LighterGrayModuleLightWidget : ModuleLightWidget {
-	LighterGrayModuleLightWidget() {
-		bgColor = nvgRGB(0x9a, 0x9a, 0x9a);
-		borderColor = nvgRGBA(0, 0, 0, 0x60);
-	}
-};
-
-struct LighterGreenBlueYellowLight : LighterGrayModuleLightWidget {
-  LighterGreenBlueYellowLight() {
-	addBaseColor(COLOR_GREEN);
-	addBaseColor(COLOR_BLUE);
-	addBaseColor(COLOR_YELLOW);		
-  }
-};
-
-*/
-
-
 struct Customscaler : Module {
 
   static const int NUM_OCTAVES = 5;
@@ -139,15 +108,15 @@ struct Customscaler : Module {
   Customscaler() {
 	config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	activeTones.reserve(NUM_TONES);
-	configParam(Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f, "");		
-	configParam(Customscaler::BASE_PARAM, 0.f, 11.f, 0.f, "");	
-	configParam(Customscaler::P_PARAM, 0.f, 1.f, 0.5f, "");		
-	configParam(Customscaler::MODE_PARAM, 0.f, 1.f, 1.f, "");	
-	configParam(Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "");	
+	configParam(Customscaler::RANGE_PARAM, 0.f, 2.f, 0.f, "Range", "octaves");		
+	configParam(Customscaler::BASE_PARAM, 0.f, 11.f, 0.f, "Base tone", "half tone");	
+	configParam(Customscaler::P_PARAM, 0.f, 1.f, 0.5f, "Probability", "%");		
+	configParam(Customscaler::MODE_PARAM, 0.f, 1.f, 1.f, "Mode");	
+	configParam(Customscaler::RESET_BUTTON_PARAM, 0.0f, 1.0f, 0.0f, "Reset");	
 	for (int octave=0; octave<Customscaler::NUM_OCTAVES; octave++) {
 	  for (int tone=0; tone<12; tone++) {
 		int index = octave * 12 + tone;
-		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, "");
+		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, octave == 2 && tone==0?"C4":"");
 	  }
 	}
 	onReset();	
@@ -469,9 +438,8 @@ struct CustomscalerWidget : ModuleWidget {
   
   CustomscalerWidget(Customscaler *module) {
 	setModule(module);
-	
-	setPanel(SVG::load(asset::plugin(pluginInstance, "res/CustomScaler.svg")));
 
+	setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CustomScaler.svg")));
 	addChild(createWidget<ScrewSilver>(Vec(15, 0)));
 	addChild(createWidget<ScrewSilver>(Vec(15, 365)));
 	addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 0)));
@@ -500,14 +468,11 @@ struct CustomscalerWidget : ModuleWidget {
 	addParam(createParam<RoundBlackKnob>(Vec(x2 + offsetKnob, lastY - (2 * yRange + 1 * ySeparator - offsetKnob)), module, Customscaler::P_PARAM));
 	addInput(createInput<PJ301MPort>(Vec(x, lastY - (2 * yRange + 1 * ySeparator)), module, Customscaler::P_INPUT));
 
-	// INFO(" x %f, lastY %f, test %d", x, lastY - (1 * yRange + 1 * ySeparator), 2);	
 	addInput(createInput<PJ301MPort>(Vec(x, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::RANDOMIZE_TRIGGER_INPUT));
 	addParam(createParam<CKSS>(Vec(x2 + offsetSwitch, lastY - (1 * yRange + 1 * ySeparator)), module, Customscaler::MODE_PARAM));
 
-	// INFO(" x %f, lastY %f, test %d", x, lastY, 3);
-	
-	addInput(createInput<PJ301MPort>(Vec(x, lastY), module, Customscaler::RESET_TRIGGER_INPUT)); // breaks
-	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM)); // breaks
+	addInput(createInput<PJ301MPort>(Vec(x, lastY), module, Customscaler::RESET_TRIGGER_INPUT)); 
+	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM)); 
 	
 	// generate lights
 	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
@@ -517,35 +482,30 @@ struct CustomscalerWidget : ModuleWidget {
 	  for (int tone=0; tone<12; tone++) {
 		float y = -5 + 28 * (12 - tone);
 		int index = octave * 12 + tone;
-		// INFO("x %f y %f", x, y);
 
-		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index)); // breaks
-		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3)); // breaks
+		addParam(createParam<LEDBezel>(Vec(x, y), module, Customscaler::TONE1_PARAM + index)); 
+		addChild(createLight<ToneLight<GreenBlueYellowLight>>(Vec(x + offsetX, y + offsetY), module, Customscaler::TONE1_PARAM + index * 3)); 
 	  }
 	}
   };
 
 
-  /*
-  void appendContextMenu(Menu *menu) override {
-	Customscaler *customscaler = dynamic_cast<Customscaler*>(module);
-	assert(customscaler);
-	
-	struct UniBiItem : MenuItem {
-	  Customscaler *customscaler;
-	  void onAction(EventAction &e) override {
-		customscaler->bipolarInput ^= true;;
-	  }
-	  void process(const ProcessArgs &args) override {
-		rightText = customscaler->bipolarInput ? "-5V..5V" : "0V..10V";
-		MenuItem::step();
-	  }
-	};
-	
-	menu->addChild(construct<MenuLabel>());
-	menu->addChild(construct<UniBiItem>(&MenuItem::text, "Signal input", &UniBiItem::customscaler, customscaler));
+  struct UniBiItem : MenuItem {
+	Customscaler *module;
+	void onAction(const event::Action &e) override {
+	  module->bipolarInput ^= true;;
+	}
   };
-  */
+
+  void appendContextMenu(Menu *menu) override {
+	Customscaler *module = dynamic_cast<Customscaler*>(this->module);	
+	
+	menu->addChild(new MenuEntry);
+	UniBiItem *uniBiItem = createMenuItem<UniBiItem>("bipolar input", CHECKMARK(module->bipolarInput));
+	uniBiItem->module = module;
+	menu->addChild(uniBiItem);
+  }
+  
 };
 
 
