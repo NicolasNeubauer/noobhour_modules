@@ -1,5 +1,6 @@
 #include "Noobhour.hpp"
 #include <vector>
+#include <set>
 
 
 // TODO LATER
@@ -91,13 +92,13 @@ struct Customscaler : Module {
   dsp::SchmittTrigger resetButtonTrigger;
   dsp::SchmittTrigger paramTrigger[NUM_TONES];
   
-  dsp::PulseGenerator changePulse;
+  dsp::PulseGenerator changePulse[PORT_MAX_CHANNELS];
   
   bool state[NUM_TONES];
   bool candidate[NUM_TONES];
-  int lastFinalTone = NUM_TONES;
+  int lastFinalTone[PORT_MAX_CHANNELS];
   int lastStartTone = NUM_TONES;
-  int lastSelectedTone = NUM_TONES; 
+  int lastSelectedTone[PORT_MAX_CHANNELS]; 
 
   std::vector<int> activeTones;
   bool activeTonesDirty = true;
@@ -118,6 +119,10 @@ struct Customscaler : Module {
 		int index = octave * 12 + tone;
 		configParam(Customscaler::TONE1_PARAM + index, 0.0f, 1.0f, 0.0f, octave == 2 && tone==0?"C4":"");
 	  }
+	}
+	for (int c=0; c<PORT_MAX_CHANNELS; c++) {
+	  lastSelectedTone[c] = NUM_TONES;
+	  lastFinalTone[c] = NUM_TONES;
 	}
 	onReset();	
   }
@@ -358,34 +363,64 @@ void Customscaler::process(const ProcessArgs &args) {
 
   // SELECT TONE  
   float output = 0;
-  int selectedTone = NUM_TONES;
-  int finalTone = NUM_TONES;
-  if (inputs[SIGNAL_INPUT].isConnected() && activeTones.size() > 0) {
-	float inp = inputs[SIGNAL_INPUT].getVoltage();
-	if (bipolarInput)
-	  inp += 5.f;
-	unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inp, 0.f, 10.f)) / 10.f);
-	if (selectedIndex == activeTones.size())
-	  selectedIndex--;
-	selectedTone = activeTones[selectedIndex];
-	finalTone = selectedTone + baseToneDiscrete;
-	output = getVOct(finalTone);
-  }
+  int selectedTone;
+  bool oneSelectedToneDirty = false;
+  std::set<int> selectedTones;
+	
 
-  // DETECT TONE CHANGE
-  if (finalTone != lastFinalTone) {
-	changePulse.trigger(0.001f);
-	lastFinalTone = finalTone;
-  }  
+  
+
+  /* POLYPHONY
+	 only matters below (above is polyphony-agnostic manipulation of the module's state)
+
+	 if input is polyphonic, output and changegate are polyphonic too; different inputs are 
+	 mapped to different tones according to the same scale however. 
+	 whenever one signal
+
+	 lastFinalTone needs to be an array too so we know when to trigger a change gate
+  */
+  
+  if (inputs[SIGNAL_INPUT].isConnected() && activeTones.size() > 0) {
+	int channels = inputs[SIGNAL_INPUT].getChannels();
+	for (int c = 0; c < channels; c++) {
+	  float inp = inputs[SIGNAL_INPUT].getVoltage(c);
+	  if (bipolarInput)
+		inp += 5.f;
+	  unsigned int selectedIndex = static_cast<int>(activeTones.size() * (clamp(inp, 0.f, 10.f)) / 10.f);
+	  if (selectedIndex == activeTones.size())
+		selectedIndex--;
+	  selectedTone = activeTones[selectedIndex];
+	  selectedTones.insert(selectedTone);
+	  if (selectedTone != lastSelectedTone[c]) {
+		lastSelectedTone[c] = selectedTone;
+		oneSelectedToneDirty = true;
+	  }
+	  int finalTone = selectedTone + baseToneDiscrete;
+	  output = getVOct(finalTone);
+	  outputs[OUT_OUTPUT].setVoltage(output, c);
+	  // DETECT TONE CHANGE
+	  if (finalTone != lastFinalTone[c]) {
+		changePulse[c].trigger(0.001f);
+		lastFinalTone[c] = finalTone;
+	  }  
+	  outputs[CHANGEGATE_OUTPUT].setVoltage((changePulse[c].process(1.0f / args.sampleRate) ? 10.0f : 0.0f), c);
+	}
+	outputs[OUT_OUTPUT].setChannels(channels);
+	outputs[CHANGEGATE_OUTPUT].setChannels(channels);
+
+  }
+  
+
 
   // LIGHTS
-  if (activeTonesDirty || selectedTone != lastSelectedTone) {
+  if (activeTonesDirty || oneSelectedToneDirty) {
+	oneSelectedToneDirty = false;
 	for (int i = 0; i < NUM_TONES; i++) {
 	  float green = 0.f;
 	  float blue = 0.f;
 	  float yellow = 0.f;
 	  if (state[i]) {
-		if (i==selectedTone) {
+		if (selectedTones.find(i) != selectedTones.end()) {
 		  blue = 0.9f;
 		} else {
 		  if (i >= startTone && i <= endTone) {
@@ -409,12 +444,6 @@ void Customscaler::process(const ProcessArgs &args) {
 	}
   }
   activeTonesDirty = false; // only reset after check for lights has been done
-  lastSelectedTone = selectedTone; 
-  
-  // OUTPUT
-  outputs[OUT_OUTPUT].setVoltage(output);
-  outputs[CHANGEGATE_OUTPUT].setVoltage((changePulse.process(1.0f / args.sampleRate) ? 10.0f : 0.0f));
-
 }
 
 
