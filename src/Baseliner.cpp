@@ -114,14 +114,12 @@ template <int NUM_COLUMNS>
 void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
   float outputs_cache[NUM_COLUMNS][PORT_MAX_CHANNELS] = {0};
   int channels[NUM_COLUMNS] = {0};
-  INFO("entering loop");
+  int maxChannels = 0;
   for (int i = 0; i < NUM_COLUMNS; i++) {
 	float gate = 0.0;
 
 	// If gate isn't active, use an earlier, active gate's input (daisy-chaining)
 	for (int j = i; j >= 0; j--) {
-	  if (i==0)
-		INFO("checking gate %d, status %d", j, inputs[GATE1_INPUT + j].isConnected() ? 1 : 0);
 	  if (inputs[GATE1_INPUT + j].isConnected()) {
 		gate = inputs[GATE1_INPUT + j].getVoltage();
 		break;
@@ -145,9 +143,7 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
 	float p = clamp(p_input + params[P1_PARAM + i].getValue(), 0.0f, 1.0f);
 
 	if (mode == MODE_GATE && (1.0 - p < 1e-4)) { // trivial case: gate mode and probability = 1: use signal when gate is on
-	  if (i==0)
-		INFO("checking gate signal %f", gate);	  
-		useSignal = gate > 1.0f;
+	  useSignal = gate > 1.0f;
 	} else { 
 	  bool trigger = gateTriggers[i].process(rescale(gate, 0.1f, 2.f, 0.f, 1.f));
 	  bool toss = trigger ? (random::uniform() < p) : false;
@@ -182,34 +178,25 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
 	float absVal = 0.0f;
 	
 	if (useSignal) {
-	  //if (inputs[SIGNAL1_INPUT + i].isConnected()) {
-	  if (i==0)
-		INFO("using signal");
 	  channels[i] = inputs[SIGNAL1_INPUT + i].getChannels();
-	  //}	  
 	  param = params[SIGNAL1_PARAM + i].getValue();
 	  absVal = params[SIGNAL1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 1.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 0.0;
 	} else {
-	  if (i==0)
-		INFO("using base");
-	  //if (inputs[BASE1_INPUT + i].isConnected()) {
 	  channels[i] = inputs[BASE1_INPUT + i].getChannels();
-	  //}
 	  param = params[BASE1_PARAM + i].getValue();
 	  absVal = params[BASE1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 1.0;	  
 	}
-	if (i == 0)
-	  INFO("channels: %d", channels[i]);
+	maxChannels = std::max(maxChannels, channels[i]);
 	
 	for (int c=0; c<channels[i]; c++) {
 	  if (useSignal) {
-		input = inputs[BASE1_INPUT + i].getVoltage(c);
+		input = inputs[SIGNAL1_INPUT + i].getVoltage(c);
 	  } else {
-		input = inputs[SIGNAL1_INPUT + i].getVoltage(c);		
+		input = inputs[BASE1_INPUT + i].getVoltage(c);
 	  }
 	  float output = clamp(input * param + absVal, -10.f, 10.f);
 	  outputs_cache[i][c] = output;	  
@@ -217,24 +204,28 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
   }
 
   // daisy-chain outputs
-  int stackOutputs = 0;
   float stacked[PORT_MAX_CHANNELS] = {0.f};
   
   int currentChannels = 0;
   for (int i=0; i < NUM_COLUMNS; i++) {
-	int numChannels = std::max(currentChannels, channels[i]);
+	currentChannels = std::max(currentChannels, channels[i]);
 	if (outputs[OUT1_OUTPUT + i].isConnected()) {
-	  for (int c=0; c < numChannels; c++) {
-		outputs[OUT1_OUTPUT + i].setVoltage((stacked[c] + outputs_cache[i][c]) / (stackOutputs+1), c);
+	  for (int c=0; c < currentChannels; c++) {
+		// if only one channel, distribute that value over all channels
+		float currentVoltage = channels[i] == 1 ? outputs_cache[i][0] : outputs_cache[i][c];
+		float voltage = stacked[c] + currentVoltage;
+		outputs[OUT1_OUTPUT + i].setVoltage(voltage, c);
 	  }
-	  outputs[OUT1_OUTPUT + i].setChannels(numChannels);
+	  outputs[OUT1_OUTPUT + i].setChannels(currentChannels);
 	  std::fill(stacked, stacked+PORT_MAX_CHANNELS, 0);
-	  stackOutputs = 0;
 	  currentChannels = 0;
 	} else {
-	  stackOutputs += 1;
-	  for (int c=0; c < channels[i]; c++)
-		stacked[c] += outputs_cache[i][c];
+	  for (int c=0; c < maxChannels; c++) {
+		if (channels[i]==1)  // if only one channel, distribute that value over all channels
+		  stacked[c] += outputs_cache[i][0];		  
+		else
+		  stacked[c] += outputs_cache[i][c];
+	  }
 	}
   }
 
