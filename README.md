@@ -88,8 +88,8 @@ single-channel columns will be added to all channels of polyphonic other columns
 For example, if column 1 outputs two channels and column 2 only one,
 and output 1 is unpatched, the output 2 will be
 `(column1.channel1 + column2.channel1, column1.channel2 + column2.channel1)`.
-However, if output 1 has 3 channels and output 2 has 2, output 2 will be
-`(column1.channel 1 + column2.channel1, column1.channel2 + column2.channel2, column1.channel3 + 0)`.
+However, if column 1 has 3 channels and column 2 has 2, output 2 will be
+`(column1.channel1 + column2.channel1, column1.channel2 + column2.channel2, column1.channel3 + 0)`.
 
 ### Patching suggestions
 
