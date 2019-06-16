@@ -1,3 +1,4 @@
+
 ![All](./doc/all.png)
 
 # noobhour modules
@@ -61,6 +62,7 @@ knob value (0..1) and the CV input.
   triggers, the output switches from **Low** to **High** or from **High** to
   **Low** with probability **p**.
   
+ 
 ### Daisy-chaining
 
 Gates are normalized to the left and the outputs are normalized to the right:
@@ -68,13 +70,26 @@ Gates are normalized to the left and the outputs are normalized to the right:
 - Any unpatched **Gate**will receive its value
   from its first patched input from the left.
 - Any unpatched output will contribute its value to the right. The
-  next patched output will return the average of its own value plus
+  next patched output will return the sum of its own value plus
   all potential unpatched outputs to its left (until there is another
   patched output to the left).
 - Note that in earlier versions, **High** and **Low** were also normalized
   to the left, but this was discarded, as it complicated having a proper 
   zero baseline. 
 
+### Polyphony
+
+If **High** or **Low** inputs are polyphonic, their polyphony will be passed 
+through according to **Gate** and **att** and **abs** modifications will be 
+applied to each channel.
+
+When daisy-chaining columns with different numbers of active channels,
+single-channel columns will be added to all channels of polyphonic other columns.
+For example, if column 1 outputs two channels and column 2 only one,
+and output 1 is unpatched, the output 2 will be
+`(column1.channel1 + column2.channel1, column1.channel2 + column2.channel1)`.
+However, if output 1 has 3 channels and output 2 has 2, output 2 will be
+`(column1.channel 1 + column2.channel1, column1.channel2 + column2.channel2, column1.channel3 + 0)`.
 
 ### Patching suggestions
 
@@ -172,6 +187,11 @@ one modifies the scale matrix.
 
 - **reset** will turn off all lights on the matrix. 
 
+### Polyphony
+
+If **in** is polyphonic, **v/oct** and **change** will be polyphonic as well,
+applying the different channels' input to the same scale and independently firing
+change gates when the resulting pitch changes.
 
 ### Videos
 
