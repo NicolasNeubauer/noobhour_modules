@@ -1,5 +1,5 @@
 #include "Noobhour.hpp"
-#include "dsp/digital.hpp"
+#include <algorithm> 
 
 template <int NUM_COLUMNS>
 struct Baseliner : Module {
@@ -90,31 +90,43 @@ struct Baseliner : Module {
 	MODE_LATCH
   };
 
-  SchmittTrigger gateTriggers[NUM_COLUMNS];
+  dsp::SchmittTrigger gateTriggers[NUM_COLUMNS];
   bool isActive[NUM_COLUMNS];
 
-  Baseliner() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  Baseliner() {
+	config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+	for (int i = 0; i < NUM_COLUMNS; i++) {
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f, "Absolute value HIGH", "V");
+	  configParam(Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f, "Attenuation HIGH", "*");	  
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f, "Attenuation LOW", "*");
+	  configParam(Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f, "Absolute value LOW", "V");
+	  configParam(Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f, "Mode");
+	  configParam(Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f, "Probability");
+	}
+	
+  }
   
-  void step() override;
+  void process(const ProcessArgs &args) override;
 
 };
 
 template <int NUM_COLUMNS>
-void Baseliner<NUM_COLUMNS>::step() {
-  float outputs_cache[NUM_COLUMNS];
-  
+void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
+  float outputs_cache[NUM_COLUMNS][PORT_MAX_CHANNELS] = {0};
+  int channels[NUM_COLUMNS] = {0};
+  int maxChannels = 0;
   for (int i = 0; i < NUM_COLUMNS; i++) {
 	float gate = 0.0;
 
 	// If gate isn't active, use an earlier, active gate's input (daisy-chaining)
 	for (int j = i; j >= 0; j--) {
-	  if (inputs[GATE1_INPUT + j].active) {
-		gate = inputs[GATE1_INPUT + j].value;
+	  if (inputs[GATE1_INPUT + j].isConnected()) {
+		gate = inputs[GATE1_INPUT + j].getVoltage();
 		break;
 	  }
 	}
 	
-	float modeFloat = params[MODE1_PARAM + i].value;
+	float modeFloat = params[MODE1_PARAM + i].getValue();
 	int mode = 0;
 	if (modeFloat > 1.5) {
 	  mode = MODE_GATE;
@@ -126,15 +138,15 @@ void Baseliner<NUM_COLUMNS>::step() {
 	
 	bool useSignal = false;
 	float p_input = 0;
-	if (inputs[P1_INPUT + i].active)
-	  p_input = clamp(inputs[P1_INPUT + i].value / 10.f, -10.f, 10.f);
-	float p = clamp(p_input + params[P1_PARAM + i].value, 0.0f, 1.0f);
+	if (inputs[P1_INPUT + i].isConnected())
+	  p_input = clamp(inputs[P1_INPUT + i].getVoltage() / 10.f, -10.f, 10.f);
+	float p = clamp(p_input + params[P1_PARAM + i].getValue(), 0.0f, 1.0f);
 
 	if (mode == MODE_GATE && (1.0 - p < 1e-4)) { // trivial case: gate mode and probability = 1: use signal when gate is on
-		useSignal = gate > 1.0f;
+	  useSignal = gate > 1.0f;
 	} else { 
 	  bool trigger = gateTriggers[i].process(rescale(gate, 0.1f, 2.f, 0.f, 1.f));
-	  bool toss = trigger ? (randomUniform() < p) : false;
+	  bool toss = trigger ? (random::uniform() < p) : false;
 	  switch (mode) {
 		
 	  case MODE_GATE:
@@ -164,47 +176,56 @@ void Baseliner<NUM_COLUMNS>::step() {
 	float input = 0.0f;
 	float param = 0.0f;
 	float absVal = 0.0f;
+	
 	if (useSignal) {
-	  // daisy-chain inputs
-	  for (int j = i; j >= 0; j--) {
-		if (inputs[SIGNAL1_INPUT + j].active) {
-		  input = inputs[SIGNAL1_INPUT + j].value;
-		  break;
-		}
-	  }	  
-	  param = params[SIGNAL1_PARAM + i].value;
-	  absVal = params[SIGNAL1ABS_PARAM + i].value;
+	  channels[i] = inputs[SIGNAL1_INPUT + i].getChannels();
+	  param = params[SIGNAL1_PARAM + i].getValue();
+	  absVal = params[SIGNAL1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 1.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 0.0;
 	} else {
-	  // daisy-chain inputs
-	  for (int j = i; j >= 0; j--) {
-		if (inputs[BASE1_INPUT + j].active) {
-		  input = inputs[BASE1_INPUT + j].value;
-		  break;
-		}
-	  }	  	  
-	  param = params[BASE1_PARAM + i].value;
-	  absVal = params[BASE1ABS_PARAM + i].value;
+	  channels[i] = inputs[BASE1_INPUT + i].getChannels();
+	  param = params[BASE1_PARAM + i].getValue();
+	  absVal = params[BASE1ABS_PARAM + i].getValue();
 	  lights[SIGNAL1_LIGHT_POS + 2*i].value = 0.0;
 	  lights[BASE1_LIGHT_POS + 2*i].value = 1.0;	  
 	}
-	float output = clamp(input * param + absVal, -10.f, 10.f);
-
-	outputs_cache[i] = output;
+	maxChannels = std::max(maxChannels, channels[i]);
+	
+	for (int c=0; c<channels[i]; c++) {
+	  if (useSignal) {
+		input = inputs[SIGNAL1_INPUT + i].getVoltage(c);
+	  } else {
+		input = inputs[BASE1_INPUT + i].getVoltage(c);
+	  }
+	  float output = clamp(input * param + absVal, -10.f, 10.f);
+	  outputs_cache[i][c] = output;	  
+	}
   }
 
   // daisy-chain outputs
-  int stackOutputs = 0;
-  float stacked = 0.f;
+  float stacked[PORT_MAX_CHANNELS] = {0.f};
+  
+  int currentChannels = 0;
   for (int i=0; i < NUM_COLUMNS; i++) {
-	if (outputs[OUT1_OUTPUT + i].active) {
-	  outputs[OUT1_OUTPUT + i].value = (stacked + outputs_cache[i]) / (stackOutputs+1);
-	  stacked = 0.f;
-	  stackOutputs = 0;
+	currentChannels = std::max(currentChannels, channels[i]);
+	if (outputs[OUT1_OUTPUT + i].isConnected()) {
+	  for (int c=0; c < currentChannels; c++) {
+		// if only one channel, distribute that value over all channels
+		float currentVoltage = channels[i] == 1 ? outputs_cache[i][0] : outputs_cache[i][c];
+		float voltage = stacked[c] + currentVoltage;
+		outputs[OUT1_OUTPUT + i].setVoltage(voltage, c);
+	  }
+	  outputs[OUT1_OUTPUT + i].setChannels(currentChannels);
+	  std::fill(stacked, stacked+PORT_MAX_CHANNELS, 0);
+	  currentChannels = 0;
 	} else {
-	  stackOutputs += 1;
-	  stacked += outputs_cache[i];
+	  for (int c=0; c < maxChannels; c++) {
+		if (channels[i]==1)  // if only one channel, distribute that value over all channels
+		  stacked[c] += outputs_cache[i][0];		  
+		else
+		  stacked[c] += outputs_cache[i][c];
+	  }
 	}
   }
 
@@ -213,15 +234,17 @@ void Baseliner<NUM_COLUMNS>::step() {
 
 template <int NUM_COLUMNS>
 struct BaselinerWidget : ModuleWidget {
-  BaselinerWidget(Baseliner<NUM_COLUMNS> *module) : ModuleWidget(module) {
+  BaselinerWidget(Baseliner<NUM_COLUMNS> *module) {
+
+	setModule(module);
 	std::string filename = (NUM_COLUMNS == 1 ? "res/Bsl1r.svg" : "res/Baseliner.svg");
-	setPanel(SVG::load(assetPlugin(plugin, filename)));
+	setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, filename)));
 
 	if (NUM_COLUMNS > 1) {
-	  addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
-	  addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
-	  addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 0)));
-	  addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30, 365)));
+	  addChild(createWidget<ScrewSilver>(Vec(15, 0)));
+	  addChild(createWidget<ScrewSilver>(Vec(15, 365)));
+	  addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 0)));
+	  addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 	}
 
 	float wKnob = 30.23437f;
@@ -249,28 +272,29 @@ struct BaselinerWidget : ModuleWidget {
 	float fixOffset = 5.0f;
 
 	for (int i=0; i<NUM_COLUMNS; i++) {
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i, -5.f, 5.f, 0.f));	  	  
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i, -1.f, 1.f, 1.f));	  
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), Port::INPUT, module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
 
-	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 2.78f), module, Baseliner<NUM_COLUMNS>::SIGNAL1_LIGHT_POS + 2*i));	  
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 3), Port::INPUT, module, Baseliner<NUM_COLUMNS>::GATE1_INPUT + i));
-	  addChild(ModuleLightWidget::create<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner<NUM_COLUMNS>::BASE1_LIGHT_POS + 2*i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 0 + fixOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1ABS_PARAM + i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 1 + attenuatorOffset), module, Baseliner<NUM_COLUMNS>::SIGNAL1_PARAM + i));	  
+	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 2), module, Baseliner<NUM_COLUMNS>::SIGNAL1_INPUT + i));
+	  
+	  addChild(createLight<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 2.78f), module, Baseliner<NUM_COLUMNS>::SIGNAL1_LIGHT_POS + 2*i));	  
+	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 3), module, Baseliner<NUM_COLUMNS>::GATE1_INPUT + i));
+	  addChild(createLight<SmallLight<GreenRedLight>>(Vec(xOffset + float(i)*xGrid + offsetLight, yOffset + yGrid * 3.78f), module, Baseliner<NUM_COLUMNS>::BASE1_LIGHT_POS + 2*i));
 
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), Port::INPUT, module, Baseliner<NUM_COLUMNS>::BASE1_INPUT + i));		
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::BASE1_PARAM + i, -1.f, 1.f, 1.f));
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i, -5.f, 5.f, 0.f));
+	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 4), module, Baseliner<NUM_COLUMNS>::BASE1_INPUT + i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 5 - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::BASE1_PARAM + i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid* 6 - fixOffset), module, Baseliner<NUM_COLUMNS>::BASE1ABS_PARAM + i));
 	  
-	  addOutput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), Port::OUTPUT, module, Baseliner<NUM_COLUMNS>::OUT1_OUTPUT + i));
-	  
-	  addParam(ParamWidget::create<CKSSThree>(Vec(xOffset + float(i)*xGrid + offsetSwitch, yOffset + yGrid * 8 + probOffset), module, Baseliner<NUM_COLUMNS>::MODE1_PARAM + i, 0.0f, 2.0f, 2.0f));
-	  addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 9 + probOffset), module, Baseliner<NUM_COLUMNS>::P1_PARAM + i, 0.0f, 1.0f, 1.0f));
-	  addInput(Port::create<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 10 + probOffset - attenuatorOffset), Port::INPUT, module, Baseliner<NUM_COLUMNS>::P1_INPUT + i));
+	  addOutput(createOutput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetOutput, yOffset + yGrid * 7 - fixOffset + 2), module, Baseliner<NUM_COLUMNS>::OUT1_OUTPUT + i));
+
+	  addParam(createParam<CKSSThree>(Vec(xOffset + float(i)*xGrid + offsetSwitch, yOffset + yGrid * 8 + probOffset), module, Baseliner<NUM_COLUMNS>::MODE1_PARAM + i));
+	  addParam(createParam<RoundSmallBlackKnob>(Vec(xOffset + float(i)*xGrid + offsetKnob, yOffset + yGrid * 9 + probOffset), module, Baseliner<NUM_COLUMNS>::P1_PARAM + i));
+	  addInput(createInput<PJ301MPort>(Vec(xOffset + float(i)*xGrid + offsetInput, yOffset + yGrid * 10 + probOffset - attenuatorOffset), module, Baseliner<NUM_COLUMNS>::P1_INPUT + i));
 	}
   }
 
 };
 
 
-Model *modelBaseliner = Model::create<Baseliner<4>, BaselinerWidget<4>>("noobhour", "baseliner", "Baseliner", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG, QUAD_TAG);
-Model *modelBsl1r = Model::create<Baseliner<1>, BaselinerWidget<1>>("noobhour", "bsl1r", "Bsl1r", RANDOM_TAG, ATTENUATOR_TAG, SWITCH_TAG, UTILITY_TAG);
+Model *modelBaseliner = createModel<Baseliner<4>, BaselinerWidget<4>>("baseliner");
+Model *modelBsl1r = createModel<Baseliner<1>, BaselinerWidget<1>>("bsl1r");

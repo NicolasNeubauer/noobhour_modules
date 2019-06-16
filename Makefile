@@ -1,14 +1,6 @@
 # If RACK_DIR is not defined when calling the Makefile, default to two directories above
 RACK_DIR ?= ../..
 
-# Must follow the format in the Naming section of
-# https://vcvrack.com/manual/PluginDevelopmentTutorial.html
-SLUG = noobhour
-
-# Must follow the format in the Versioning section of
-# https://vcvrack.com/manual/PluginDevelopmentTutorial.html
-VERSION = 0.6.2
-
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
@@ -27,3 +19,11 @@ DISTRIBUTABLES += $(wildcard LICENSE*) res
 
 # Include the VCV Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
+
+local:
+	$(MAKE)
+	$(MAKE) dist
+	cp -r dist/noobhour $(RACK_DIR)/plugins
+	cd $(RACK_DIR) && $(MAKE) run
+
+.PHONY: local
