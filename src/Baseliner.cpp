@@ -112,8 +112,8 @@ struct Baseliner : Module {
 
 template <int NUM_COLUMNS>
 void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
-  float outputs_cache[NUM_COLUMNS][PORT_MAX_CHANNELS] = {0};
-  int channels[NUM_COLUMNS] = {0};
+  float outputs_cache[NUM_COLUMNS][PORT_MAX_CHANNELS] = {{0}};
+  int channels[NUM_COLUMNS] = {{0}};
   int maxChannels = 0;
   for (int i = 0; i < NUM_COLUMNS; i++) {
 	float gate = 0.0;
