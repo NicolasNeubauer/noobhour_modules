@@ -86,7 +86,7 @@ struct Customscaler : Module {
 	NUM_LIGHTS
   };
 
-  dsp::SchmittTrigger gateTrigger;
+  dsp::SchmittTrigger gateTrigger[NUM_TONES];
   dsp::SchmittTrigger randomizeTrigger;
   dsp::SchmittTrigger resetTrigger;
   dsp::SchmittTrigger resetButtonTrigger;
@@ -304,15 +304,18 @@ void Customscaler::process(const ProcessArgs &args) {
 
   // TOGGLE
   if (inputs[TONE_INPUT].isConnected()) {
-	float gate = 0.0;
-	if (inputs[TOGGLE_TRIGGER_INPUT].isConnected())
-	  gate = inputs[TOGGLE_TRIGGER_INPUT].getVoltage();
-	if (gateTrigger.process(rescale(gate, 0.1f, 2.f, 0.f, 1.f))) {
-	  int toneIndex = getTone(inputs[TONE_INPUT].getVoltage());
-	  if (toneIndex >= 0 && toneIndex < NUM_TONES) {
-		state[toneIndex] ^= true;
-		candidate[toneIndex] = false;
-		activeTonesDirty = true;
+	int channels = inputs[TONE_INPUT].getChannels();
+	for (int c = 0; c < channels; c++) {	
+	  float gate = 0.0;
+	  if (inputs[TOGGLE_TRIGGER_INPUT].isConnected())
+		gate = inputs[TOGGLE_TRIGGER_INPUT].getVoltage(c);
+	  if (gateTrigger[c].process(rescale(gate, 0.1f, 2.f, 0.f, 1.f))) {
+		int toneIndex = getTone(inputs[TONE_INPUT].getVoltage(c));
+		if (toneIndex >= 0 && toneIndex < NUM_TONES) {
+		  state[toneIndex] ^= true;
+		  candidate[toneIndex] = false;
+		  activeTonesDirty = true;
+		}
 	  }
 	}
   }
@@ -372,6 +375,8 @@ void Customscaler::process(const ProcessArgs &args) {
 
   /* POLYPHONY
 	 only matters below (above is polyphony-agnostic manipulation of the module's state)
+
+	 UPDATE polyphony also matters above now when toggling
 
 	 if input is polyphonic, output and changegate are polyphonic too; different inputs are 
 	 mapped to different tones according to the same scale however. 

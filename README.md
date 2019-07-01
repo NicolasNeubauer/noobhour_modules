@@ -153,6 +153,7 @@ one modifies the scale matrix.
   trigger. This means you can control the matrix from e.g. a keyboard
   or a sequencer (or another **Customscaler**, gasp). The **base** offset is
   not taken into consideration.
+  
 - **random** randomizes which tones are selected in the matrix,
   according to **p** and **latch/toggle**, see below. 
   
@@ -192,6 +193,10 @@ one modifies the scale matrix.
 If **in** is polyphonic, **v/oct** and **change** will be polyphonic as well,
 applying the different channels' input to the same scale and independently firing
 change gates when the resulting pitch changes.
+
+As of 1.0.3, the **toggle** and corresponding **v/oct** inputs are polyphonic 
+as well. When a gate on channel *c* of **toggle** is received, the tone on 
+channel *c* of **v/oct** is toggled.
 
 ### Videos
 
