@@ -9,3 +9,4 @@ extern Plugin *pluginInstance;
 extern Model *modelBaseliner;
 extern Model *modelBsl1r;
 extern Model *modelCustomscaler;
+extern Model *modelNormaliser;

@@ -7,5 +7,6 @@ void init(Plugin *p) {
 
 	p->addModel(modelBaseliner);
 	p->addModel(modelBsl1r);	
-	p->addModel(modelCustomscaler);	
+	p->addModel(modelCustomscaler);
+	p->addModel(modelNormaliser);		
 }
