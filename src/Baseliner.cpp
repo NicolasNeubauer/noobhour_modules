@@ -192,7 +192,7 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
 	}
 	maxChannels = std::max(maxChannels, channels[i]);
 	
-	for (int c=0; c<channels[i]; c++) {
+	for (int c=0; c<std::max(channels[i],1); c++) {
 	  if (useSignal) {
 		input = inputs[SIGNAL1_INPUT + i].getVoltage(c);
 	  } else {
@@ -208,7 +208,7 @@ void Baseliner<NUM_COLUMNS>::process(const ProcessArgs &args) {
   
   int currentChannels = 0;
   for (int i=0; i < NUM_COLUMNS; i++) {
-	currentChannels = std::max(currentChannels, channels[i]);
+	currentChannels = std::max(1, std::max(currentChannels, channels[i]));
 	if (outputs[OUT1_OUTPUT + i].isConnected()) {
 	  for (int c=0; c < currentChannels; c++) {
 		// if only one channel, distribute that value over all channels
