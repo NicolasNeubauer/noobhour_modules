@@ -21,7 +21,7 @@
         "attenuator",
         "switch",
         "quad",
-		"poly"
+        "poly"
       ]
     },
     {
@@ -32,7 +32,7 @@
         "random",
         "attenuator",
         "switch",
-		"poly"
+        "poly"
       ]
     },
     {
@@ -42,7 +42,16 @@
       "tags": [
         "quantizer",
         "random",
-		"poly"
+        "poly"
+      ]
+    },
+    {
+      "slug": "Normaliser",
+      "name": "Normaliser",
+      "description": "scales inputs to configurable range",
+		"tags": [
+			"attenuator",
+			"poly"
       ]
     }
   ]
