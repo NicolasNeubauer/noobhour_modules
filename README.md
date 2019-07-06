@@ -7,6 +7,7 @@ A collection of modules for [VCV Rack](https://github.com/VCVRack/Rack):
 - **Baseliner**, a 4x probabilistic attenuverting switch. 
 - **Bsl1r**, a single-channel **Baseliner**
 - **Customscaler**, a quantizer for custom, CV-modifiable scales.
+- **Normaliser**, an attenuator scaling values to an output range.
 
 ## Baseliner
 A 4x probabilistic attenuverting switch. 
@@ -205,6 +206,30 @@ Check out the video below, which shows several instances of **Customscaler** in 
 
 The video below shows some less conventional uses of **Customscaler**
 [![Customscaler demo](http://img.youtube.com/vi/ja4_e43hRFA/0.jpg)](http://www.youtube.com/watch?v=ja4_e43hRFA)
+
+## Normaliser
+An attenuator scaling values to an output range.
+
+![Normaliser](./doc/Normaliser.png)
+
+**Normaliser** returns the input signal sent to **in**, scaled to a
+range from **min** to **max**.  It keeps track of the lowest and
+highest values that so far have been sent to **in**, in two variables
+*min_current* and *max_current*. Mathematically, it returns (**in** -
+*min_current*) / (*max_current* - *min_current*) + **min** *
+(**max**-**min**).
+
+**reset** deletes the current *min_current* and *max_current*.
+
+**freeze** stops updating *min_current* and *max_current* from **in**; 
+values outside those boundaries will be clamped to **min** and **max**, respectively.
+
+**poly** changes the polyphonic behaviour. If **poly** is off, a single pair of
+*min_current* and *max_current* values will be computed from inputs on all channels.
+Set to on, each channel will track its own set of *min_current* and *max_current*.
+
+The **min** and **max** outputs return the values for *min_current* and *max_current*.
+They will be polyphonic if **in** is polyphonic and **poly** is on.
 
 
 ## Acknowledgements 
