@@ -509,8 +509,8 @@ struct CustomscalerWidget : ModuleWidget {
 	addParam(createParam<TL1105>(Vec(x2 + offsetTL1005, lastY  + offsetTL1005), module, Customscaler::RESET_BUTTON_PARAM)); 
 	
 	// generate lights
-	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x; // from Mutes
-	float offsetY = mm2px(Vec(17.32, 18.915)).y - mm2px(Vec(16.57, 18.165)).y;	
+	float offsetX = mm2px(Vec(17.32, 18.915)).x - mm2px(Vec(16.57, 18.165)).x - 0.5; // from Mutes
+	float offsetY = mm2px(Vec(17.32, 18.915)).y - mm2px(Vec(16.57, 18.165)).y - 0.5;	
 	for (int octave=0; octave<Customscaler::NUM_OCTAVES; octave++) {
 	  float x = 88 + octave * 27;
 	  for (int tone=0; tone<12; tone++) {
